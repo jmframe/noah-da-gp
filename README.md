@@ -20,6 +20,7 @@
 
 ## WARNINGS:
 * Check the .gitignore file, I copied it in from another project, and it might prevent you from pushing something you want.
+* Let's be very careful about the number of files generated and saved during runs. My (jmframe) file quota is pretty low.
 
 ## Genetal TODO list
 * Keep this README up do date. 
@@ -27,10 +28,17 @@
 * Copy in Craig's GP code. The MPI version runs in parallel and is for training. The non-MPI version is for making predictions. 
 * Make a run directory, and the ability to fill it with a directory for each site:
     * For the data assimilation runs
+        * Add a link to the raw data for processing. Process data as part of the run. Do not save the input data.
         * After all the data assimilation runs have been complete, save all the states in a pickle file, with the site IDs as keys
     * For the GPR training runs
-        * Save the training data as a pickle file. This will be one file for each site. The file will have dynamic the data from every other site in one array.
+        * Add a link to the raw data for processing. Process data before the run. 
+        * Save the Noah-MP input data, since it will be used for training the GP multiple times. But delete after run.
+        * Save the GP training data as a pickle file. This will be one file for each site. The file will have dynamic the data from every other site in one array.
+        * Save the GP states after training. Copy it into the testing directory.
     * For the run testing the GP dynamic state update
+        * Add a link to the raw data for processing. Process data as part of the run. Do not save the input data. 
+        * Save the simulated values as output.
+* Add a data directory. The run directories will link to this data directory, so we won't need to copy data. Let's avoid copying raw data as much as possible. 
 
 ## Completed tasks
 * 08-31-2020 [jmframe]: Initialized github repository
