@@ -1,0 +1,71 @@
+--------------------------------------------------------------------------
+ OSTRICH version 18.11.18 (Built Nov 18 2018 @ 17:11:21)
+
+ A computer program for model-independent calibration and optimization.
+
+ Author             L. Shawn Matott
+ Copyright (C) 2007 L. Shawn Matott
+
+ This program is free software; you can redistribute 
+ it and/or modify it under the terms of the GNU  
+ General Public License as published by the Free 
+ Software Foundation; either version 2 of the 
+ License, or(at your option) any later version. 
+
+ This program is distributed in the hope that it will 
+ be useful, but WITHOUT ANY WARRANTY; without even 
+ the implied warranty of MERCHANTABILITY or FITNESS 
+ FOR A PARTICULAR PURPOSE. See the GNU General Public 
+ License for more details. 
+
+ You should have received a copy of the GNU General 
+ Public License along with this program; if not, 
+ write to the Free Software Foundation, Inc., 59 
+ Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+--------------------------------------------------------------------------
+
+Ostrich Setup
+Model                  : BoxCox()
+Algorithm              : Powell's Method
+Objective Function     : GCOP
+Number of Parameters   : 1
+Number of Tied Params  : 0
+Number of Observations : 0
+Seed for Random Nums.  : 1542653610
+Number of Resp. Vars        : 1
+Number of Tied Resp. Vars   : 0
+Number of Constraints       : 0
+Penalty Method              : Additive Penalty Method (APM)
+
+Ostrich Run Record
+iter  obj. function  lambda        dObjFunc
+0     -9.291089E-01  1.000000E+00  -9.291089E-01
+1     -9.302482E-01  3.000000E+00  1.139300E-03
+2     -9.302482E-01  3.000000E+00  0.000000E+00
+3     -9.302482E-01  3.000000E+00  0.000000E+00
+4     -9.302482E-01  3.000000E+00  0.000000E+00
+
+Optimal Parameter Set
+Objective Function : -9.302482E-01
+lambda             : 3.000000E+00
+
+Summary of Constraints
+
+Algorithm Metrics
+Algorithm        : Powell's Method (Conjugate Directions)
+Max Iterations   : 200
+Convergence Val  : 0.000000
+Iterations       : 4
+Algorithm Evals  : 9
+Alg. Restarts    : 0
+Upper Violations : 1
+Lower Violations : 0
+Total Evals             : 187
+Telescoping Strategy    : none
+
+One Dimensional Search Metrics
+Search Type          : Brent
+Convergence Val      : 1.000000E-06
+Bound Min Evals      : 26
+Golden Section Evals : 99
+Brent Evals          : 53

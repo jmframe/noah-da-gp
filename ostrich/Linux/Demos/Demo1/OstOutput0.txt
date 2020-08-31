@@ -1,0 +1,409 @@
+--------------------------------------------------------------------------
+ OSTRICH version 18.11.18 (Built Nov 18 2018 @ 17:11:21)
+
+ A computer program for model-independent calibration and optimization.
+
+ Author             L. Shawn Matott
+ Copyright (C) 2007 L. Shawn Matott
+
+ This program is free software; you can redistribute 
+ it and/or modify it under the terms of the GNU  
+ General Public License as published by the Free 
+ Software Foundation; either version 2 of the 
+ License, or(at your option) any later version. 
+
+ This program is distributed in the hope that it will 
+ be useful, but WITHOUT ANY WARRANTY; without even 
+ the implied warranty of MERCHANTABILITY or FITNESS 
+ FOR A PARTICULAR PURPOSE. See the GNU General Public 
+ License for more details. 
+
+ You should have received a copy of the GNU General 
+ Public License along with this program; if not, 
+ write to the Free Software Foundation, Inc., 59 
+ Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+--------------------------------------------------------------------------
+
+Ostrich Setup
+Model                  : ./split > OstExeOut.txt 2>&1
+Algorithm              : Levenberg-Marquardt
+Objective Function     : WSSE
+Number of Parameters   : 3
+Number of Tied Params  : 0
+Number of Observations : 25
+Seed for Random Nums.  : 1542653605
+
+Ostrich Run Record
+iter  obj. function  K1            K2            Kback         lambda
+0     8.230901E+04  5.000000E+01  5.000000E+01  5.000000E+01  1.000000E+01
+1     1.518936E+04  5.866911E+01  3.268063E+01  2.505936E+00  9.090909E+00
+2     2.099246E+03  4.469489E+01  8.689294E+00  7.725641E-01  1.000000E+01
+3     5.903000E+00  3.758501E+01  4.597661E+00  9.860186E-01  1.100000E+01
+4     1.643442E-02  3.345070E+01  4.842002E+00  1.000334E+00  1.000000E+01
+5     3.916551E-03  1.795372E+01  5.109870E+00  9.997449E-01  9.090909E+00
+6     4.666478E-04  1.563663E+01  5.024358E+00  1.000007E+00  4.240976E+00
+7     4.634068E-04  1.559258E+01  5.025345E+00  1.000016E+00  3.855433E+00
+
+Optimal Parameter Set
+Objective Function : 4.634068E-04
+K1                 : 1.559258E+01
+K2                 : 5.025345E+00
+Kback              : 1.000016E+00
+
+Statistical Output
+
+Untransformed WSSE : 4.634068E-04
+
+Observation Residuals
+Observation    Measured       Simulated      Weight          Residual(Transformed and Weighted)   Sensitive?
+obs1          6.823000E+01  6.822611E+01  1.000000E+00  +3.894540E-03      YES
+obs2          6.810000E+01  6.809915E+01  1.000000E+00  +8.523200E-04      YES
+obs3          6.823000E+01  6.822558E+01  1.000000E+00  +4.416660E-03      YES
+obs4          6.806000E+01  6.806193E+01  1.000000E+00  -1.927090E-03      YES
+obs5          6.815000E+01  6.815256E+01  1.000000E+00  -2.559690E-03      YES
+obs6          6.600000E+01  6.600576E+01  1.000000E+00  -5.763920E-03      YES
+obs7          6.553000E+01  6.552863E+01  1.000000E+00  +1.371550E-03      YES
+obs8          6.597000E+01  6.596967E+01  1.000000E+00  +3.325200E-04      YES
+obs9          6.551000E+01  6.551302E+01  1.000000E+00  -3.018150E-03      YES
+obs10         6.576000E+01  6.576122E+01  1.000000E+00  -1.221170E-03      YES
+obs11         6.902000E+01  6.902490E+01  1.000000E+00  -4.904430E-03      YES
+obs12         6.761000E+01  6.761406E+01  1.000000E+00  -4.064640E-03      YES
+obs13         6.616000E+01  6.616139E+01  1.000000E+00  -1.394520E-03      YES
+obs14         6.475000E+01  6.474996E+01  1.000000E+00  +4.079000E-05      YES
+obs15         6.898000E+01  6.898087E+01  1.000000E+00  -8.657600E-04      YES
+obs16         6.691000E+01  6.690681E+01  1.000000E+00  +3.190580E-03      YES
+obs17         6.548000E+01  6.547870E+01  1.000000E+00  +1.301550E-03      YES
+obs18         6.432000E+01  6.432164E+01  1.000000E+00  -1.640780E-03      YES
+obs19         6.657000E+01  6.655491E+01  1.000000E+00  +1.508520E-02      YES
+obs20         6.721000E+01  6.720973E+01  1.000000E+00  +2.747100E-04      YES
+obs21         6.734000E+01  6.734355E+01  1.000000E+00  -3.545100E-03      YES
+obs22         6.464000E+01  6.464484E+01  1.000000E+00  -4.841320E-03      YES
+obs23         6.454000E+01  6.453334E+01  1.000000E+00  +6.655180E-03      YES
+obs24         6.872000E+01  6.871768E+01  1.000000E+00  +2.322270E-03      YES
+obs25         6.892000E+01  6.892087E+01  1.000000E+00  -8.715300E-04      YES
+
+Correlation between raw measured and simulated observations (no transformation or weighting)
+Ry         :  1.000
+Ry-squared :  1.000
+
+Correlation between measured and simulated observations (with transformation and weighting)
+Rw         :  1.000
+Rw-squared :  1.000
+
+Runs Test on Residuals
+NOTE: Residuals of zero are counted as positive.
+Positive Residuals : 12
+Negative Residuals : 13
+Number of Runs     : 12
+Lower-tail critical value (alpha=0.1) : 9
+Upper-tail critical value (alpha=0.1) : 17
+Runs appear to be randomly distributed
+
+Autorun Function Test for Lag-1 Autocorrelation of Residuals
+Lag-1 Autorun Function (r1)           : 0.500000
+Variance of Lag-1 Autorun Function    : 0.011230
+Approximate Lag-1 Variance            : 0.011364
+Std. Dev. of Lag-1 Autorun Function   : 0.105974
+Median Residual (m)                   : -0.000866
+Number of Surpluses (ei > m)          : 12
+Number of Deficits  (ei <= m)         : 13
+Number of Lag-1 Surplus Pairs (n1)    : 6
+Lower-tail critical value (alpha=0.1) : 0.304840
+Upper-tail critical value (alpha=0.1) : 0.653494
+Lag-1 residuals do NOT appear to be correlated
+
+Error Variance and Standard Error of the Regression
+S^2 : 2.106395E-05
+S   : 4.589548E-03
+
+MMRI (Alternative Measures of Model Fit)
+Akaike Information Criterion           (AIC)  : -264.394526
+Corrected Akaike Information Criterion (AICc) : -262.394526
+Corrected Unbiased Akaike Criterion    (AICu) : -258.035692
+Bayesian Information Criterion         (BIC)  : -259.519023
+Hannan and Quinn's Criterion           (HQ)   : -263.042269
+
+Parameter Variance-Covariance
+               K1             K2             Kback          
+K1            +8.032908E-05  -4.187597E-06  +3.493699E-08  
+K2            -4.187597E-06  +5.933990E-06  -1.451594E-08  
+Kback         +3.493699E-08  -1.451594E-08  +1.883562E-10  
+
+Parameter Standard Error
+K1             : 8.962649E-03 
+K2             : 2.435978E-03 
+Kback          : 1.372429E-05 
+
+Parameter Correlation
+               K1            K2            Kback         
+K1            +1.000         -0.192         +0.284         
+K2            -0.192         +1.000         -0.434         
+Kback         +0.284         -0.434         +1.000         
+
+Linear Confidence Intervals (95.00%)
+Parameter      Lower Limit     Upper Limit
+K1            +1.493931E+01  +1.627442E+01
+K2            +4.967226E+00  +5.084144E+00
+Kback         +9.999501E-01  +1.000081E+00
+
+Non-Linearity Measures
+Beale (N)     : 1.351306E-04
+Assessment    : Linear
+
+Linssen (M^2) : 1.408128E-04
+Assessment    : Linear
+
+Thresholds for N and/or M^2
+Non-linear : > 3.279620E-01
+Linear     : < 2.951658E-02
+
+Normalized Residuals
+r_expected      r_ordered
+-1.964216E+00  -5.763920E-03
+-1.519197E+00  -4.904430E-03
+-1.259304E+00  -4.841320E-03
+-1.064442E+00  -4.064640E-03
+-9.033566E-01  -3.545100E-03
+-7.628637E-01  -3.018150E-03
+-6.360366E-01  -2.559690E-03
+-5.187137E-01  -1.927090E-03
+-4.081436E-01  -1.640780E-03
+-3.023620E-01  -1.394520E-03
+-1.998676E-01  -1.221170E-03
+-9.943588E-02  -8.715300E-04
++0.000000E+00  -8.657600E-04
++9.943588E-02  +4.079000E-05
++1.998676E-01  +2.747100E-04
++3.023620E-01  +3.325200E-04
++4.081436E-01  +8.523200E-04
++5.187137E-01  +1.301550E-03
++6.360366E-01  +1.371550E-03
++7.628637E-01  +2.322270E-03
++9.033566E-01  +3.190580E-03
++1.064442E+00  +3.894540E-03
++1.259304E+00  +4.416660E-03
++1.519197E+00  +6.655180E-03
++1.964216E+00  +1.508520E-02
+
+Normal probability correlation coefficient
+R2N                  : 0.8635
+RN                   : 0.9292
+RN Critical Value    : 0.9576
+Normality Assessment : Residuals do NOT appear to be normally distributed
+
+Sample Statistics for Residuals
+Minumum       : -5.763920E-03
+Maximum       : 1.508520E-02
+Mean          : 1.247908E-04
+Median        : -8.657600E-04
+Std Deviation : 4.303568E-03
+Skewness      :  1.792
+Kurtosis      :  5.276
+(Skewness and Kurtosis should be close to 0 if residuals are normally distributed)
+
+Estimated Optimal Box-Cox Transformation
+Lambda : 3.000000
+
+Measures of Observation Influence
+
+Cook's D
+Observation    Leverage   infl.?  Di         infl.?
+obs1          2.04E-01  yes     7.74E-02  no
+obs2          8.05E-02  no      1.09E-03  no
+obs3          2.03E-01  yes     9.86E-02  no
+obs4          1.54E-01  yes     1.26E-02  no
+obs5          6.51E-02  no      7.73E-03  no
+obs6          9.53E-02  no      6.12E-02  no
+obs7          1.34E-01  yes     5.32E-03  no
+obs8          7.51E-02  no      1.54E-04  no
+obs9          1.43E-01  yes     2.80E-02  no
+obs10         5.48E-02  no      1.45E-03  no
+obs11         5.84E-02  no      2.51E-02  no
+obs12         5.05E-02  no      1.47E-02  no
+obs13         4.51E-02  no      1.52E-03  no
+obs14         1.16E-01  no      3.91E-06  no
+obs15         9.87E-02  no      1.44E-03  no
+obs16         4.92E-02  no      8.76E-03  no
+obs17         4.77E-02  no      1.41E-03  no
+obs18         6.43E-02  no      3.13E-03  no
+obs19         7.61E-02  no      3.21E-01  yes
+obs20         2.24E-01  yes     4.44E-04  no
+obs21         1.16E-01  no      2.94E-02  no
+obs22         2.62E-01  yes     1.79E-01  yes
+obs23         2.09E-01  yes     2.34E-01  yes
+obs24         9.52E-02  no      9.93E-03  no
+obs25         2.79E-01  yes     6.47E-03  no
+
+Number of  influential Leverage : 9
+Number of influential Di        : 3
+
+Thresholds for Cook's D
+Di       > 1.60E-01
+Leverage > 1.20E-01
+
+DFBETAS
+Observation    K1            infl.?  K2            infl.?  Kback         infl.?  
+obs1          -4.07E-01     yes     -5.70E-02     no      -2.52E-01     no      
+obs2          +2.89E-02     no      -3.14E-02     no      -1.68E-02     no      
+obs3          -4.60E-01     yes     -6.93E-02     no      -2.84E-01     no      
+obs4          -1.48E-01     no      +9.67E-02     no      +1.80E-02     no      
+obs5          +4.44E-02     no      +6.91E-02     no      +8.67E-02     no      
+obs6          -2.41E-01     no      +2.76E-01     no      +8.49E-02     no      
+obs7          +1.73E-02     no      +9.74E-02     no      -9.34E-02     no      
+obs8          +1.06E-02     no      -1.19E-02     no      -6.33E-03     no      
+obs9          -2.96E-02     no      -2.32E-01     no      +2.17E-01     no      
+obs10         -2.79E-02     no      -1.48E-02     no      +4.77E-02     no      
+obs11         +1.20E-01     no      +5.58E-02     no      +2.09E-01     no      
+obs12         -7.74E-03     no      +9.16E-02     no      +1.27E-01     no      
+obs13         -2.18E-02     no      +1.43E-02     no      +4.39E-02     no      
+obs14         +1.16E-04     no      +2.67E-03     no      -2.71E-03     no      
+obs15         +4.62E-02     no      +5.73E-03     no      +4.43E-02     no      
+obs16         +6.25E-02     no      -4.09E-02     no      -9.77E-02     no      
+obs17         +1.57E-02     no      +1.95E-02     no      -5.46E-02     no      
+obs18         -8.30E-03     no      -5.81E-02     no      +8.47E-02     no      
+obs19         +8.72E-01     yes     -5.85E-01     yes     -4.74E-01     yes     
+obs20         +2.68E-02     no      -2.29E-02     no      +1.37E-03     no      
+obs21         -1.41E-01     no      +2.15E-01     no      +3.83E-02     no      
+obs22         +1.11E-02     no      -6.74E-01     yes     +5.17E-01     yes     
+obs23         +7.91E-03     no      +7.73E-01     yes     -6.31E-01     yes     
+obs24         -1.12E-01     no      -3.73E-02     no      -1.07E-01     no      
+obs25         +1.23E-01     no      +3.62E-03     no      +7.05E-02     no      
+
+Number of influential DFBETAS : 5
+
+Threshold for DFBETAS
+|DFBETASij| > 4.00E-01
+
+Parameter Sensitivities
+
+Dimensionless Scaled Sensitivities
+Observation    K1            K2            Kback         
+obs1          -2.19703E-01  -2.94640E-01  -5.25192E-04  
+obs2          +1.03123E-01  -2.99832E-01  -5.26013E-04  
+obs3          -2.18371E-01  -2.98806E-01  -5.25154E-04  
+obs4          +1.97593E-01  -3.13203E-01  -5.26134E-04  
+obs5          -3.28227E-02  -3.01889E-01  -5.25625E-04  
+obs6          +1.12793E-01  -3.40330E-01  -5.09432E-04  
+obs7          +9.62263E-02  +2.91475E-01  -5.11779E-04  
+obs8          +9.76633E-02  -2.92851E-01  -5.09525E-04  
+obs9          +9.07012E-02  +3.12788E-01  -5.11833E-04  
+obs10         +9.94838E-02  -1.68129E-02  -5.10604E-04  
+obs11         -4.27340E-02  -2.17041E-01  -5.33159E-04  
+obs12         +2.25801E-02  -2.52768E-01  -5.22241E-04  
+obs13         +6.74733E-02  -1.62035E-01  -5.12110E-04  
+obs14         +6.88167E-02  +2.59584E-01  -5.05270E-04  
+obs15         -1.16860E-01  -2.19950E-01  -5.32365E-04  
+obs16         +7.70230E-02  -1.73631E-01  -5.17839E-04  
+obs17         +7.08355E-02  -1.08109E-02  -5.08306E-04  
+obs18         +6.09957E-02  +1.03859E-01  -5.00388E-04  
+obs19         +1.23695E-01  -2.31061E-01  -5.14818E-04  
+obs20         +2.17253E-01  -4.42698E-01  -5.18378E-04  
+obs21         +1.02232E-01  -4.16571E-01  -5.19008E-04  
+obs22         +8.01925E-02  +5.20228E-01  -5.07056E-04  
+obs23         +8.02164E-02  +4.40462E-01  -5.05415E-04  
+obs24         -1.07624E-01  -2.68194E-01  -5.29906E-04  
+obs25         -2.73425E-01  -2.66015E-01  -5.30551E-04  
+
+1-Percent Scaled Sensitivities
+Observation    K1            K2            Kback         
+obs1          -2.19153E-03  -2.94711E-03  -5.25200E-06  
+obs2          +1.02868E-03  -2.99891E-03  -5.26019E-06  
+obs3          -2.17825E-03  -2.98868E-03  -5.25162E-06  
+obs4          +1.97098E-03  -3.13229E-03  -5.26140E-06  
+obs5          -3.27401E-04  -3.01943E-03  -5.25632E-06  
+obs6          +1.12513E-03  -3.40383E-03  -5.09438E-06  
+obs7          +9.59840E-04  +2.91524E-03  -5.11786E-06  
+obs8          +9.74183E-04  -2.92877E-03  -5.09531E-06  
+obs9          +9.04727E-04  +3.12848E-03  -5.11840E-06  
+obs10         +9.92343E-04  -1.68069E-04  -5.10610E-06  
+obs11         -4.26285E-04  -2.17072E-03  -5.33167E-06  
+obs12         +2.25232E-04  -2.52795E-03  -5.22248E-06  
+obs13         +6.73035E-04  -1.62039E-03  -5.12117E-06  
+obs14         +6.86433E-04  +2.59636E-03  -5.05276E-06  
+obs15         -1.16566E-03  -2.20003E-03  -5.32372E-06  
+obs16         +7.68322E-04  -1.73664E-03  -5.17845E-06  
+obs17         +7.06593E-04  -1.08136E-04  -5.08313E-06  
+obs18         +6.08434E-04  +1.03875E-03  -5.00394E-06  
+obs19         +1.23388E-03  -2.31098E-03  -5.14824E-06  
+obs20         +2.16711E-03  -4.42752E-03  -5.18384E-06  
+obs21         +1.01976E-03  -4.16618E-03  -5.19014E-06  
+obs22         +7.99907E-04  +5.20315E-03  -5.07063E-06  
+obs23         +8.00154E-04  +4.40533E-03  -5.05422E-06  
+obs24         -1.07355E-03  -2.68239E-03  -5.29913E-06  
+obs25         -2.72741E-03  -2.66076E-03  -5.30559E-06  
+
+Composite Scaled Sensitivities
+K1             : 1.278227E-01
+K2             : 2.942242E-01
+Kback          : 5.176093E-04
+
+Matrices
+
+Jacobian Matrix (note: includes Transformation, if applicable)
+Observation    K1            K2            Kback         
+obs1          -1.837115E-01 -4.203162E-01 -7.735512E+01 
+obs2          +8.623231E-02 -4.277038E-01 -7.747580E+01 
+obs3          -1.825985E-01 -4.262438E-01 -7.734953E+01 
+obs4          +1.652238E-01 -4.467254E-01 -7.749362E+01 
+obs5          -2.744538E-02 -4.306292E-01 -7.741868E+01 
+obs6          +9.431769E-02 -4.854531E-01 -7.503362E+01 
+obs7          +8.046154E-02 +4.157700E-01 -7.537939E+01 
+obs8          +8.166385E-02 -4.177000E-01 -7.504728E+01 
+obs9          +7.584154E-02 +4.461831E-01 -7.538735E+01 
+obs10         +8.318615E-02 -2.397000E-02 -7.520621E+01 
+obs11         -3.573462E-02 -3.095877E-01 -7.852850E+01 
+obs12         +1.888077E-02 -3.605354E-01 -7.692031E+01 
+obs13         +5.641923E-02 -2.310992E-01 -7.542811E+01 
+obs14         +5.754231E-02 +3.702923E-01 -7.442062E+01 
+obs15         -9.771538E-02 -3.137669E-01 -7.841154E+01 
+obs16         +6.440692E-02 -2.476785E-01 -7.627184E+01 
+obs17         +5.923231E-02 -1.542231E-02 -7.486783E+01 
+obs18         +5.100385E-02 +1.481462E-01 -7.370158E+01 
+obs19         +1.034338E-01 -3.295908E-01 -7.582690E+01 
+obs20         +1.816646E-01 -6.314508E-01 -7.635114E+01 
+obs21         +8.548462E-02 -5.941792E-01 -7.644401E+01 
+obs22         +6.705462E-02 +7.420715E-01 -7.468375E+01 
+obs23         +6.707538E-02 +6.282869E-01 -7.444207E+01 
+obs24         -8.999385E-02 -3.825608E-01 -7.804930E+01 
+obs25         -2.286338E-01 -3.794762E-01 -7.814445E+01 
+
+Normal Matrix
++2.870349E-01  +8.912305E-02  -4.637188E+01  
++8.912305E-02  +4.402052E+00  +3.227196E+02  
+-4.637188E+01  +3.227196E+02  +1.453025E+05  
+
+Inverse Normal Matrix
++3.813582E+00  -1.988040E-01  +1.658615E-03  
+-1.988040E-01  +2.817131E-01  -6.891367E-04  
++1.658615E-03  -6.891367E-04  +8.942113E-06  
+
+Algorithm Metrics
+Algorithm         : Levenberg-Marquardt
+Max Iterations    : 20
+Actual Iterations : 7
+Convergence Val   : 0.000100
+LPRCV             : 0.300000
+LRRCV             : 0.010000
+Max Lambda Trials : 10
+Move Limit        : 0.100000
+Total Alg Evals   : 29
+Total Evals       : 61
+Upper Violations  : 0
+Lower Violations  : 0
+Move Limit Viols  : 3
+LPRCV : Lambda-Phi Ratio Convergence Value
+LRRCV : Lambda Relative Reduction Convergence Value
+Total Evals             : 61
+Telescoping Strategy    : none
+
+Finite Difference Metrics
+Difference Type    : Forward
+Increment Type    : Range-Relative
+Finite Difference Increments
+K1           : 0.001000
+K2           : 0.001000
+Kback        : 0.001000
+Finite Difference Mimumum Increment : 1.000000E-10
+Jacobian Evals     : 24
+Optimal Step Evals : 0
+Statistics Evals   : 8
