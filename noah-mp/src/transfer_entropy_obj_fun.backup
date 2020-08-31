@@ -1,0 +1,246 @@
+subroutine transfer_entropy_obj_fun(mdate,mtime,forcing,state,output,Nt)!ofval,errcode)
+
+ use type_decs
+ implicit none
+
+ ! ------------------------------------------------------------------
+ ! variable declarations
+ ! dimensions
+ integer, intent(in) :: Nt
+ integer, parameter :: Nof = 60 !5 + 5*5 + 6*5
+ integer :: t, i
+ 
+ ! dates
+ integer, dimension(Nt,2) :: mdate, odate
+ real, dimension(Nt) :: mtime, otime
+
+ ! model vars
+ type(forcing_data), intent(in), dimension(Nt) :: forcing
+ type(state_data),   intent(in), dimension(Nt) :: state
+ type(output_data),  intent(in), dimension(Nt) :: output
+
+ ! obs/mod vars
+ real, dimension(Nt) :: osm1, osm2, oqe, oqh, onee
+ real, dimension(Nt) :: msm1, msm2, mqe, mqh, mnee
+ real :: mean_oqe, mean_oqh, mean_osm1, mean_osm2, mean_onee
+ real :: mean_mqe, mean_mqh, mean_msm1, mean_msm2, mean_mnee
+ real :: std_oqe, std_oqh, std_osm1, std_osm2, std_onee
+ real :: std_mqe, std_mqh, std_msm1, std_msm2, std_mnee
+ real, dimension(Nt) :: uv, rn, rh, ta, pa, pp
+
+ ! transfer entropy variables
+ integer, parameter :: Du = 6, Dx = 5 
+ real, dimension(Du,Dx) :: TEu
+ real, dimension(Dx,Dx) :: TEx
+ real, dimension(Dx) :: Hx
+
+ ! of values
+! real, dimension(5), intent(out) :: ofval
+! character(20), intent(out) :: errcode
+ real, dimension(Nof) :: ofval
+ character(20) :: errcode
+
+ ! I/O parms
+ real, parameter :: fid = 136
+
+ ! initialize error code
+ errcode = 'no_errors'
+
+ ! ------------------------------------------------------------------
+ ! read observation file
+ open(fid,file='obs.txt')
+  do t = 1,Nt
+   ! the humidity here is kg/kg, not % and not relative humidity.
+   read(fid,*) odate(t,:),otime(t),   &
+               oqe(t),oqh(t),osm1(t),osm2(t),onee(t)
+  enddo ! times
+ close(fid)
+
+ ! ------------------------------------------------------------------
+ ! check dates
+ do t = 1,Nt
+  if ((odate(t,1).ne.mdate(t,1)).or.  &
+      (odate(t,2).ne.mdate(t,2)).or.  &
+      (otime(t)  .ne.mtime(t))) then
+   errcode = 'mismatch_obs_dates'
+   return
+  endif
+ enddo ! times 
+
+ ! ------------------------------------------------------------------
+ ! extract pertinent modeled dimensions
+ do t = 1,Nt
+  mqe(t)  = output(t)%qe 
+  mqh(t)  = output(t)%qh
+  msm1(t) = state(t)%smc(1)
+  msm2(t) = state(t)%smc(2)
+  mnee(t) = output(t)%nee
+ enddo ! times 
+
+ do t = 1,Nt
+  uv(t) = forcing(t)%sfcspd
+  rn(t) = forcing(t)%lwrad + forcing(t)%swrad
+  rh(t) = forcing(t)%q2
+  pp(t) = forcing(t)%prcprate
+  ta(t) = forcing(t)%sfctmp
+  pa(t) = forcing(t)%sfcprs
+ enddo
+
+ ! ------------------------------------------------------------------
+ ! standardize all output dimensions
+
+ ! calculate expected values
+ mean_oqe  = 0
+ mean_oqh  = 0
+ mean_osm1 = 0
+ mean_osm2 = 0
+ mean_onee = 0
+ 
+ mean_mqe  = 0
+ mean_mqh  = 0
+ mean_msm1 = 0
+ mean_msm2 = 0
+ mean_mnee = 0
+
+ do t = 1,Nt
+  mean_oqe  = mean_oqe  + oqe(t) 
+  mean_oqh  = mean_oqh  + oqh(t) 
+  mean_osm1 = mean_osm1 + osm1(t) 
+  mean_osm2 = mean_osm2 + osm2(t) 
+  mean_onee = mean_onee + onee(t) 
+
+  mean_mqe  = mean_mqe  + mqe(t) 
+  mean_mqh  = mean_mqh  + mqh(t) 
+  mean_msm1 = mean_msm1 + msm1(t) 
+  mean_msm2 = mean_msm2 + msm2(t) 
+  mean_mnee = mean_mnee + mnee(t) 
+ enddo ! times 
+
+ mean_oqe  = mean_oqe /Nt 
+ mean_oqh  = mean_oqh /Nt 
+ mean_osm1 = mean_osm1/Nt  
+ mean_osm2 = mean_osm2/Nt  
+ mean_onee = mean_onee/Nt  
+
+ mean_mqe  = mean_mqe /Nt 
+ mean_mqh  = mean_mqh /Nt 
+ mean_msm1 = mean_msm1/Nt  
+ mean_msm2 = mean_msm2/Nt  
+ mean_mnee = mean_mnee/Nt  
+
+ ! calculate standard deviations
+ std_oqe  = 0 
+ std_oqh  = 0
+ std_osm1 = 0
+ std_osm2 = 0
+ std_onee = 0
+ 
+ std_mqe  = 0
+ std_mqh  = 0
+ std_msm1 = 0
+ std_msm2 = 0
+ std_mnee = 0
+
+ do t = 1,Nt
+  std_oqe  = std_oqe  + (oqe(t) - mean_oqe)**2 
+  std_oqh  = std_oqh  + (oqh(t) - mean_oqh)**2 
+  std_osm1 = std_osm1 + (osm1(t)- mean_osm1)**2 
+  std_osm2 = std_osm2 + (osm2(t)- mean_osm2)**2 
+  std_onee = std_onee + (onee(t)- mean_onee)**2 
+
+  std_mqe  = std_mqe  + (mqe(t) - mean_mqe)**2
+  std_mqh  = std_mqh  + (mqh(t) - mean_mqh)**2
+  std_msm1 = std_msm1 + (msm1(t)- mean_msm1)**2 
+  std_msm2 = std_msm2 + (msm2(t)- mean_msm2)**2 
+  std_mnee = std_mnee + (mnee(t)- mean_mnee)**2 
+ enddo ! times 
+
+ std_oqe  = sqrt(std_oqe /(Nt-1)) 
+ std_oqh  = sqrt(std_oqh /(Nt-1)) 
+ std_osm1 = sqrt(std_osm1/(Nt-1))  
+ std_osm2 = sqrt(std_osm2/(Nt-1))  
+ std_onee = sqrt(std_onee/(Nt-1))  
+
+ std_mqe  = sqrt(std_mqe /(Nt-1)) 
+ std_mqh  = sqrt(std_mqh /(Nt-1)) 
+ std_msm1 = sqrt(std_msm1/(Nt-1))  
+ std_msm2 = sqrt(std_msm2/(Nt-1))  
+ std_mnee = sqrt(std_mnee/(Nt-1))  
+
+ ! ------------------------------------------------------------------
+ ! calcualte squared errors for each output dimension
+ ofval = 0
+ do t = 1,Nt
+  if ((oqe(t).gt.-9999).and.(mqe(t).gt.-9999)) then
+   ofval(1) = ofval(1) + ((oqe(t) - mqe(t))**2)/Nt 
+  endif 
+  if ((oqh(t).gt.-9999).and.(mqh(t).gt.-9999)) then
+   ofval(2) = ofval(2) + ((oqh(t) - mqh(t))**2)/Nt
+  endif 
+  if ((osm1(t).gt.-9999).and.(msm1(t).gt.-9999)) then
+   ofval(3) = ofval(3) + ((osm1(t) - msm1(t))**2)/Nt
+  endif 
+  if ((osm2(t).gt.-9999).and.(msm2(t).gt.-9999)) then
+   ofval(4) = ofval(4) + ((osm2(t) - msm2(t))**2)/Nt
+  endif 
+  if ((onee(t).gt.-9999).and.(mnee(t).gt.-9999)) then
+   ofval(5) = ofval(5) + ((onee(t) - mnee(t))**2)/Nt
+  endif 
+ enddo ! times 
+
+ ! standardize to R^2 (coefficeint of determination)
+ ofval(1) = ofval(1)/std_oqe**2
+ ofval(2) = ofval(2)/std_oqh**2
+ ofval(3) = ofval(3)/std_osm1**2
+ ofval(4) = ofval(4)/std_osm2**2
+ ofval(5) = ofval(5)/std_onee**2
+
+ ! ------------------------------------------------------------------
+! ! transfer entropy variables
+! integer, parameter :: Du = 6, Dx = 5
+! real, dimension(Du,Dx) :: TEu
+! real, dimension(Dx,Dx) :: TEx
+! real, dimension(Dx) :: Hx
+
+ ! store in matrices
+ forc(:,1) = uv
+ forc(:,2) = ta
+ forc(:,3) = pa
+ forc(:,4) = rn
+ forc(:,5) = pp
+ forc(:,6) = rh
+
+ modl(:,1) = mqe
+ modl(:,2) = mqh
+ modl(:,3) = msm1
+ modl(:,4) = msm2
+ modl(:,5) = mnee
+
+ obsv(:,1) = oqe
+ obsv(:,2) = oqh
+ obsv(:,3) = osm1
+ obsv(:,4) = osm2
+ obsv(:,5) = onee
+
+ ! transfer entropy pathways: forcings -> states/fluxes
+ call transfer_entropy(
+ 
+
+
+ ! ------------------------------------------------------------------
+ ! write to stdout
+ !write(*,"(A14,T20,F10.5)") 'OST_ObjFuncVal',sum(ofval) 
+! write(*,"(A14,T20,F7.4,T30,F7.4,T40,F7.4,T50,F7.4,T60,F7.4)") 'OST_ObjFuncVal', ofval
+! write(*,"(A16,T20,A20)") 'OST_ModelErrCode',errcode 
+
+ open(fid,file='noahmp_objfun.out')
+ write(fid,'(A10,F20.10)') 'QeMSE = ',  ofval(1)
+ write(fid,'(A10,F20.10)') 'QhMSE = ',  ofval(2)
+ write(fid,'(A10,F20.10)') 'SM1MSE = ', ofval(3)
+ write(fid,'(A10,F20.10)') 'SM2MSE = ', ofval(4)
+ write(fid,'(A10,F20.10)') 'NEEMSE = ', ofval(5)
+ close(fid)
+
+ ! ------------------------------------------------------------------
+ return
+end subroutine
