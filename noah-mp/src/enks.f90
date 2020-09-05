@@ -3,21 +3,39 @@ subroutine enks(X,Y,Zbar,Zsig,Nt,Ne,Dx,Dz,Threshold_on_CC)
   implicit none
  
  ! in/out 
-  integer, intent(in)                      :: Nt ! This is actually the number of lagged time steps considered
-  integer, intent(in)                      :: Ne ! Number of ensemble numbers
-  integer, intent(in)                      :: Dz ! Number of observed variables at current time step
-  integer, intent(in)                      :: Dx ! Number of modeled states at lagged time steps that need to be adjusted based on the information from the observed variables at current time step
-  real, dimension(Dz), intent(in)          :: Zbar ! Vector of observed variables at current time step
-  real, dimension(Dz), intent(in)          :: Zsig ! Vector of standard deviations corresponding to the observed variables at current time step. This is read in from obs_cov.txt, but the 'cov' apparently denoting a covariance matrix is a misnomer since this Zsig is only a standard deviation related to a variance vector (instead of covariance). Its values are used for the diagonal matrix R below where covariances are 0 (hence only variance-related terms remain and using the term 'variance' is probably ok).
-                                                   ! Alternately Zsig can be vector of relative standard deviations. Comment out and uncomment the relevant 2 lines further below as per what is actually used. 
-  real, dimension(Nt,Dx,Ne), intent(inout) :: X ! Model states that need to be adjusted
-  real, dimension(Dz,Ne), intent(in)       :: Y ! Modeled variables (states of fluxes) at this time step that directly correspond to the observed variables
+  ! This is actually the number of lagged time steps considered
+  integer, intent(in)                      :: Nt 
+  ! Number of ensemble numbers
+  integer, intent(in)                      :: Ne 
+  ! Number of observed variables at current time step
+  integer, intent(in)                      :: Dz 
+  ! Number of modeled states at lagged time steps that need to be 
+  ! adjusted based on the information from the observed variables at current time step
+  integer, intent(in)                      :: Dx 
+  ! Vector of observed variables at current time step
+  real, dimension(Dz), intent(in)          :: Zbar
+  ! Vector of standard deviations corresponding to the observed
+  ! variables at current time step. This is read in from obs_cov.txt, 
+  ! but the 'cov' apparently denoting a covariance matrix is a misnomer 
+  ! since this Zsig is only a standard deviation related to a variance vector 
+  ! (instead of covariance). Its values are used for the diagonal matrix R 
+  ! below where covariances are 0 (hence only variance-related terms remain 
+  ! and using the term 'variance' is probably ok).
+  real, dimension(Dz), intent(in)          :: Zsig 
+  ! Alternately Zsig can be vector of relative standard deviations. 
+  ! Comment out and uncomment the relevant 2 lines further below as per what is actually used. 
+  ! Model states that need to be adjusted
+  real, dimension(Nt,Dx,Ne), intent(inout) :: X 
+  ! Modeled variables (states of fluxes) at this time step that 
+  ! directly correspond to the observed variables
+  real, dimension(Dz,Ne), intent(in)       :: Y 
  
  ! constants
   real, dimension(Dz,Dz) :: eyeZ ! Identity matrix 
  
  ! manipulation vectors
-  real, dimension(Dx,Ne) :: Xbar ! Deviations of X at the considered time lag from respective ensemble averages
+  ! Deviations of X at the considered time lag from respective ensemble averages
+  real, dimension(Dx,Ne) :: Xbar 
   real, dimension(Dx,Ne) :: KK 
   real, dimension(Dz,Ne) :: Ybar ! Deviation of Y from respective ensemble averages
   real, dimension(Dz,Ne) :: Z ! Ensemble created from Zbar
@@ -30,8 +48,8 @@ subroutine enks(X,Y,Zbar,Zsig,Nt,Ne,Dx,Dz,Threshold_on_CC)
  
   real, dimension(Dx,Dx) :: Cxx
   real, dimension(Dx,Dz) :: CC
- 
-  real, intent(in)                      :: Threshold_on_CC ! If this is not -9999, then for CC terms less than this value, set corresponding K terms to 0 
+  ! If this is not -9999, then for CC terms less than this value, set corresponding K terms to 0
+  real, intent(in) :: Threshold_on_CC  
  
  ! indexes
   integer e, t, d, i
@@ -49,8 +67,16 @@ subroutine enks(X,Y,Zbar,Zsig,Nt,Ne,Dx,Dz,Threshold_on_CC)
   do e = 1,Ne 
     do d = 1,Dz
       eta = random_normal()
-   !   Z(d,e) = Zbar(d) * (1 + eta*Zsig(d)) ! For Zsig being relative standard deviations. If we want to use Zsig being standard deviations, then use the line immediately below instead 
-      Z(d,e) = Zbar(d) + eta*Zsig(d) ! For Zsig being standard deviations. If we want to use Zsig being relative standard deviations, then use the line immediately above instead
+
+      ! For Zsig being relative standard deviations. 
+      ! If we want to use Zsig being standard deviations, 
+      ! then use the line immediately below instead
+   !   Z(d,e) = Zbar(d) * (1 + eta*Zsig(d)) 
+
+      ! For Zsig being standard deviations. 
+      ! If we want to use Zsig being relative standard deviations, 
+      ! then use the line immediately above instead
+      Z(d,e) = Zbar(d) + eta*Zsig(d) 
     enddo
   enddo
  
@@ -96,7 +122,8 @@ subroutine enks(X,Y,Zbar,Zsig,Nt,Ne,Dx,Dz,Threshold_on_CC)
  
   IF (Threshold_on_CC .LT. -9998) THEN  
   
-    X4 = matmul(transpose(Ybar),Qinv) ! dimensions of X4 and transpose(Ybar) are (Ne, Dz), and of Qinv are (Dz,Dz)
+    ! dimensions of X4 and transpose(Ybar) are (Ne, Dz), and of Qinv are (Dz,Dz)
+    X4 = matmul(transpose(Ybar),Qinv) 
     X5 = matmul(X4,Z)/(Ne-1) ! dimensions of X5 are (Ne, Ne)
 
   ELSE IF (Threshold_on_CC .LT. -1) THEN  
@@ -122,7 +149,8 @@ subroutine enks(X,Y,Zbar,Zsig,Nt,Ne,Dx,Dz,Threshold_on_CC)
     
       ! Begin computing cross-covariances
     
-      !Between modeled states (at the considered time lag) and modeled variables (that correspond to observed ones)
+      ! Between modeled states (at the considered time lag) 
+      ! and modeled variables (that correspond to observed ones)
       Cxy = 0.
       do d = 1,Dx
         do e = 1,Dz
