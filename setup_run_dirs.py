@@ -4,12 +4,15 @@
 # Later on will make specific setup files for DA and GP
 # For no just making sure we can run the model with the data
 
+import pandas as pd
 import numpy as np
 import shutil, errno
 import os
 from os.path import dirname as up
 import sys
 from io import StringIO
+
+proj_dir = '/discover/nobackup/jframe/noah-da-gp/'
 
 # Since this program will override the initialization files, 
 # be careful running it. Check to make sure you meant to run.
@@ -29,17 +32,10 @@ else:
     flx_dir = '/discover/nobackup/jframe/data/plumber-2-flux-txt/'
     met_dir = '/discover/nobackup/jframe/data/plumber-2-met-txt/'
 
-
-# --- Experiment Setup ---------------------------------------------
-
-# load site/year combinations
-sites = np.genfromtxt('data/pals/Site_Years.txt', delimiter = ' ')
-Ns = sites.shape[0]
-with np.printoptions(precision=2, suppress=True):
-    print('sites')
-    print(sites)
-    print('Ns')
-    print(Ns)
+# Read in list of sites
+site_list = pd.read_csv(proj_dir+'setup/plumber-2-sites.csv')
+print(site_list)
+exit()
 
 # --- Set Up Runtime Directories ------------------------------------
 # delete and reinit test dirs
@@ -118,9 +114,9 @@ for s in range(0, Ns):
     with open(wdir+'parms.txt', mode='wt', encoding='utf-8') as f:
           f.writelines("%s" % p for p in P)
 
-    cmd = 'cp 'data_dir+'parms/extract_parms/site_data/cal_parms_' + S + '.txt ' + wdir + '/cal_parms.txt'  
+    cmd = 'cp '+data_dir+'parms/extract_parms/site_data/cal_parms_' + S + '.txt ' + wdir + '/cal_parms.txt'  
     os.system(cmd)
-    cmd = 'cp 'data_dir+'parms/extract_parms/site_data/time_parms_' + S + '.txt ' + wdir + '/time_parms.txt'
+    cmd = 'cp '+data_dir+'parms/extract_parms/site_data/time_parms_' + S + '.txt ' + wdir + '/time_parms.txt'
     os.system(cmd)
 
     # get site information
