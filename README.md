@@ -27,6 +27,7 @@
 * Finish the multi-objective data assimilation code.
 * Copy in Craig's GP code. The MPI version runs in parallel and is for training. The non-MPI version is for making predictions. 
 * Make a run directory, and the ability to fill it with a directory for each site:
+    * as of 9-7-2020 a general 'runs' directory, testing open loop and da. This will be replaced by the two directories described below.
     * For the data assimilation runs
         * Add a link to the raw data for processing. Process data as part of the run. Do not save the input data.
         * After all the data assimilation runs have been complete, save all the states in a pickle file, with the site IDs as keys
@@ -42,3 +43,4 @@
 
 ## Completed tasks
 * 08-31-2020 [jmframe]: Initialized github repository
+* 09-05-2020 [Soni]: Finished test version of the multiparameter EnKS function
