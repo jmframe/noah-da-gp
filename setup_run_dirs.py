@@ -8,7 +8,8 @@ import pandas as pd
 import numpy as np
 import shutil, errno
 import os
-from os.path import dirname as up
+import os.path
+from os import path
 import sys
 from io import StringIO
 
@@ -33,33 +34,21 @@ else:
     met_dir = '/discover/nobackup/jframe/data/plumber-2-met-txt/'
 
 # Read in list of sites
-site_list = pd.read_csv(proj_dir+'setup/plumber-2-sites.csv')
-print(site_list)
-exit()
-
+plum = pd.read_csv(proj_dir+'setup/plumber-2-sites.csv')
+plum.set_index('site')
+  
 # --- Set Up Runtime Directories ------------------------------------
 # delete and reinit test dirs
-cmd = 'rm -rf ' + exp_type + '/cal_dirs'
-os.system(cmd)
-cmd = 'mkdir ' + exp_type + '/cal_dirs'
-os.system(cmd)
-cmd = 'mkdir ' + exp_type + '/cal_dirs/reports'
-os.system(cmd)
-cmd = 'cp setup_dir/cleanCalFiles.py ' + exp_type + '/cal _dirs/'
+if not path.exists('runs/'):
+    cmd = 'mkdir runs/'
 
-for s in range(0, Ns):
-
-    # get sites and year, need in string
-    S = str(int(sites[s,0]))
-    Y = str(int(sites[s,1]))
-    siteyear = S + '_' + Y
-
+for s in list(plum.site):
     # screen report
-    print('Setting up run directory for site = %d, year = %d, ' % (sites[s,0],  sites[s,1]))
-    print('siteyear: ', siteyear)
+    print('Setting up run directory for site {}'.format(plum.loc[s,'site']))
+    break
 
     # working directory
-    wdir = exp_type + '/cal_dirs/run_' + siteyear
+    wdir = proj_dir+'runs/'+s
 
     # delete runtime directory for the site
     cmd = 'rm -rf ' + wdir
@@ -69,17 +58,7 @@ for s in range(0, Ns):
     cmd = 'mkdir ' + wdir + '/reports'
     os.system(cmd)
 
-    # Make a file with the site and year, 
-    # since this information isn't in any of the files.
-    fname = wdir + '/site.txt'
-    with np.printoptions(precision=7, suppress=True):
-        with open(fname, 'w') as F:
-            F.write(S)
-    fname = wdir + '/year.txt'
-
     # executables
-    cmd = 'ln -s ../../../ostrich/Source/Ostrich ' + wdir + '/ostrich.exe'  
-    os.system(cmd)
     cmd = 'ln -s ../../../model_code/noah_mp.exe ' + wdir + '/noah_mp.exe'  
     os.system(cmd)
     cmd = 'ln -s ../../../setup_dir/periodic_cleanup.sh ' + wdir + '/periodic_cleanup.sh'  
