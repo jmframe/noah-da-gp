@@ -24,7 +24,9 @@
 
 ## Genetal TODO list
 * Keep this README up do date. 
-* Finish the multi-objective data assimilation code.
+* Need to extract all the local information for the noah runs, the initial plant/soil states, the general parameters and time offset.
+* Finish the multi-objective data assimilation code. Soni has a first version of this. Will try running once the run directories are
+* working.
 * Copy in Craig's GP code. The MPI version runs in parallel and is for training. The non-MPI version is for making predictions. 
 * Make a run directory, and the ability to fill it with a directory for each site:
     * as of 9-7-2020 a general 'runs' directory, testing open loop and da. This will be replaced by the two directories described below.

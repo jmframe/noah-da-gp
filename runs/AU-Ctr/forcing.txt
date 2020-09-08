@@ -1,1 +1,1 @@
-../../../data/plumber-2-met-txt/AU-Ctr_2010-2017_OzFlux_Met.txt
+../../../data/plumber-2/met-txt/AU-Ctr_2010-2017_OzFlux_Met.txt

@@ -13,7 +13,8 @@ program run_timestep
 
  ! simulation parameters, 
  !jmframe added sig_sm & Nlag as read in values, not set in code.
- integer :: sig_sm, Nlag, EQs, firstObs 
+ real :: sig_sm
+ integer :: Nlag, EQs, firstObs 
  integer :: initCycle = 1
  integer :: Ne, Nt, Nv
  logical :: perturb, data_assim, doEQ
@@ -32,7 +33,7 @@ program run_timestep
  real    :: rz
  logical :: fixed, fexists, fixensemble = .true.
  integer, allocatable, dimension(:,:) :: date
- real, allocatable, dimension(:) :: time
+ real, allocatable, dimension(:,:) :: time
  
  !model data
  type(forcing_data), allocatable, dimension(:,:) :: forcing
@@ -119,7 +120,10 @@ program run_timestep
        ! year,month,day,hour,minute,NEE,GPP,Qle,Qh
        ! source: /discover/nobackup/jframe/data/plumber-2-flux-txt/
        read(fid,*) dummy, dummy, dummy, dummy, dummy, NEE(t), GPP(t), Qle(t), Qh(t)
-       read(fid,*) dummy, dummy, dummy, dummy, dummy, obs(t,:)
+       obs(t,1) = NEE(t)
+       obs(t,2) = GPP(t)
+       obs(t,3) = Qle(t)
+       obs(t,4) = Qh(t)
      enddo ! time
    close(fid)
  endif
@@ -149,20 +153,23 @@ program run_timestep
 ! forcing from file
  allocate(forcing(Nt,Ne))
  allocate(date(Nt,3))
- allocate(time(Nt))
+ allocate(time(Nt,2))
  fdir = './forcing'
 
  !! Maintain Ensemble number 1 without any perturbations to the forcing data
  e = 1
  ! There was logic to name the ensembles with equal of digits, but I only print 9.
+
+ ! plumber-r met value orter:
+ ! year,month,day,hour,minute,Tair,SWdown,LWdown,VPD,Qair,Psurf,Precip,Wind,RH,CO2air,LAI_alternative,LAI,IGBP_veg_long
  fname = trim(fdir)//'.txt'
  open(fid,file=trim(fname))
  do t = 2,Nt
    ! the humidity here is kg/kg, not % and not relative humidity.
-   read(fid,*) date(t,:),time(t),forcing(t,e)%sfcspd,dummy,   &
-               forcing(t,e)%sfctmp,forcing(t,e)%q2,                 &
-               forcing(t,e)%sfcprs,forcing(t,e)%swrad,              &
-               forcing(t,e)%lwrad,forcing(t,e)%prcprate  
+   read(fid,*) date(t,:),time(t,:), &
+               forcing(t,e)%sfctmp,forcing(t,e)%swrad,forcing(t,e)%lwrad,dummy, &
+               forcing(t,e)%q2,forcing(t,e)%sfcprs,forcing(t,e)%prcprate,forcing(t,e)%sfcspd, &
+               dummy, dummy, dummy, dummy, dummy
  enddo ! times
  close(fid)
 
@@ -525,7 +532,7 @@ program run_timestep
                 f17.6,f17.6,f17.6,f17.6,f17.6,f17.6,f17.6,f17.6      & 
                 f17.6,f17.6,f17.6,f17.6                              & 
                 f17.6,f17.6,f17.6,f17.6,f17.6,f17.6)')               & 
-    date(t,:),time(t), &
+    date(t,:),time(t,:), &
     forcing(t,1)%sfctmp, forcing(t,1)%sfcspd, forcing(t,1)%sfcprs,   &
     forcing(t,1)%q2, forcing(t,1)%lwrad, forcing(t,1)%swrad,         &
     forcing(t,1)%prcprate, state(t,1)%smc(1:4),                      &
@@ -668,7 +675,7 @@ program run_timestep
                    f17.6,f17.6,f17.6,f17.6,f17.6,f17.6,f17.6,f17.6      & 
                    f17.6,f17.6,f17.6,f17.6,f17.6,f17.6,f17.6,f17.6      & 
                    f17.6,f17.6,f17.6,f17.6,f17.6,f17.6)')               & 
-       date(t,:),time(t), &
+       date(t,:),time(t,:), &
        forcing(t,e)%sfctmp, forcing(t,e)%sfcspd, forcing(t,e)%sfcprs,   &
        forcing(t,e)%q2, forcing(t,e)%lwrad, forcing(t,e)%swrad,         &
        forcing(t,e)%prcprate, state(t,e)%smc(1:4),                      &
@@ -698,7 +705,7 @@ program run_timestep
                    f17.6,f17.6,f17.6,f17.6,f17.6,f17.6,f17.6,f17.6      & 
                    f17.6,f17.6,f17.6,f17.6,f17.6,f17.6,f17.6,f17.6      & 
                    f17.6,f17.6,f17.6,f17.6,f17.6,f17.6)')               & 
-       date(t,:),time(t), &
+       date(t,:),time(t,:), &
        forcing(t,e)%sfctmp, forcing(t,e)%sfcspd, forcing(t,e)%sfcprs,   &
        forcing(t,e)%q2, forcing(t,e)%lwrad, forcing(t,e)%swrad,         &
        forcing(t,e)%prcprate, state(t,e)%smc(1:4),                      &
@@ -1071,7 +1078,7 @@ subroutine perturb_state(setup,state,sig_sm)
 
  type(state_data), intent(inout) :: state
  type(setup_data), intent(in)    :: setup
- integer, intent(in)    :: sig_sm
+ real, intent(in)    :: sig_sm
  ! jmframe: changed to read in value.
  !real, parameter :: sig_sm = 0.005
 ! real, parameter :: sig_veg = 0.01

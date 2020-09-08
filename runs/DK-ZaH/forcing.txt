@@ -1,1 +1,1 @@
-../../../data/plumber-2-met-txt/DK-ZaH_2000-2013_FLUXNET2015_Met.txt
+../../../data/plumber-2/met-txt/DK-ZaH_2000-2013_FLUXNET2015_Met.txt

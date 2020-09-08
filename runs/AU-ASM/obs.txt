@@ -1,1 +1,1 @@
-../../../data/plumber-2-flux-txt/AU-ASM_2011-2017_OzFlux_Flux.txt
+../../../data/plumber-2/flux-txt/AU-ASM_2011-2017_OzFlux_Flux.txt

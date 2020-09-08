@@ -81,11 +81,11 @@ for s in list(plum.index.values):
     tup = (s,yrs,source,'Met.txt')
     met_file_name = '_'.join(tup)
     print(met_file_name)
-    cmd = 'ln -s ../../../data/plumber-2-met-txt/' + met_file_name + ' '+wdir+ '/forcing.txt'
+    cmd = 'ln -s ../../../data/plumber-2/met-txt/' + met_file_name + ' '+wdir+ '/forcing.txt'
     os.system(cmd)
     tup = (s,yrs,source,'Flux.txt')
     flux_file_name = '_'.join(tup)
-    cmd = 'ln -s ../../../data/plumber-2-flux-txt/' + flux_file_name + ' '+wdir+ '/obs.txt'
+    cmd = 'ln -s ../../../data/plumber-2/flux-txt/' + flux_file_name + ' '+wdir+ '/obs.txt'
     os.system(cmd)
 
 #    # site-specific noah-mp input files
@@ -103,7 +103,7 @@ for s in list(plum.index.values):
 #    os.system(cmd)
 #    offset = pals_sites[int(sites[s,0])-1,2]
     
-    # TEMPORARY
+    # TEMPORARY, just getting sonething that will run. NEED TO EXTRACT REAL VALUES!!!
     offset=0
     cmd = 'cp ../gpr_fluxnet/data/parms/extract_parms/site_data/time_parms_2.txt ' + wdir + '/time_parms.txt'
     os.system(cmd)
@@ -112,6 +112,8 @@ for s in list(plum.index.values):
     cmd = 'cp ../gpr_fluxnet/data/parms/extract_parms/site_data/parms_2.txt ' + wdir + '/parms.txt'
     os.system(cmd)
     cmd = 'cp ../gpr_fluxnet/initialize/site_data/soil_init_2.txt ' + wdir + '/soil_init.txt'
+    os.system(cmd)
+    cmd = 'cp ../gpr_fluxnet/initialize/site_data/plant_init_2.txt ' + wdir + '/plant_init.txt'
     os.system(cmd)
 
     # get site information
