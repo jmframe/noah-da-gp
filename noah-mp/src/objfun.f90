@@ -115,7 +115,7 @@ program run_timestep
    obs = -9999.
    ! Take out of the data assimilation logic, because we use it for other things. 
    open(fid,file='obs.txt')
-     do t = 2,Nt
+     do t = 1,Nt
        ! jmframe: PLUMBER-2 flux data Ordered from text file make from NetCDF data.
        ! year,month,day,hour,minute,NEE,GPP,Qle,Qh
        ! source: /discover/nobackup/jframe/data/plumber-2-flux-txt/
@@ -164,7 +164,7 @@ program run_timestep
  ! year,month,day,hour,minute,Tair,SWdown,LWdown,VPD,Qair,Psurf,Precip,Wind,RH,CO2air,LAI_alternative,LAI,IGBP_veg_long
  fname = trim(fdir)//'.txt'
  open(fid,file=trim(fname))
- do t = 2,Nt
+ do t = 1,Nt
    ! the humidity here is kg/kg, not % and not relative humidity.
    read(fid,*) date(t,:),time(t,:), &
                forcing(t,e)%sfctmp,forcing(t,e)%swrad,forcing(t,e)%lwrad,dummy, &
