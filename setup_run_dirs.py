@@ -35,17 +35,19 @@ else:
 
 # Read in list of sites
 plum = pd.read_csv(proj_dir+'setup/plumber-2-sites.csv')
-plum.set_index('site')
+plum.set_index('site', inplace=True)
   
 # --- Set Up Runtime Directories ------------------------------------
 # delete and reinit test dirs
 if not path.exists('runs/'):
     cmd = 'mkdir runs/'
 
-for s in list(plum.site):
+for s in list(plum.index.values):
     # screen report
-    print('Setting up run directory for site {}'.format(plum.loc[s,'site']))
-    break
+    print('Setting up run directory for site {}'.format(s))
+    stryr, endyr, source, lat, lon = plum.loc[s,:]
+    yrs = str(stryr)+'-'+str(endyr)
+    print(stryr, endyr, source, lat, lon)
 
     # working directory
     wdir = proj_dir+'runs/'+s
@@ -59,51 +61,63 @@ for s in list(plum.site):
     os.system(cmd)
 
     # executables
-    cmd = 'ln -s ../../../model_code/noah_mp.exe ' + wdir + '/noah_mp.exe'  
+    cmd = 'ln -s ../../noah-mp/noah_mp.exe ' + wdir + '/noah_mp.exe'  
     os.system(cmd)
-    cmd = 'ln -s ../../../setup_dir/periodic_cleanup.sh ' + wdir + '/periodic_cleanup.sh'  
+    cmd = 'ln -s ../../setup/periodic_cleanup.sh ' + wdir + '/periodic_cleanup.sh'  
     os.system(cmd)
 
-    cmd = 'cp setup_dir/ostIn.txt ' + wdir + '/ostIn.txt' 
-    os.system(cmd) 
-    cmd = 'cp setup_dir/cal_parms.tpl ' + wdir
+    cmd = 'cp setup/cal_parms.tpl ' + wdir
     os.system(cmd) 
 
     # generic noah-mp input files
-    cmd = 'cp ./setup_dir/da_flag_cal.txt ' + wdir + '/da_flag.txt'
+    cmd = 'cp setup/da_flag_0.txt ' + wdir + '/da_flag.txt'
     os.system(cmd)
-    cmd = 'cp ./setup_dir/init.txt ' + wdir
+    cmd = 'cp setup/init.txt ' + wdir
     os.system(cmd)
-    cmd = 'cp ./setup_dir/tbot.txt ' + wdir
+    cmd = 'cp setup/tbot.txt ' + wdir
     os.system(cmd)
 
     # Large data files. Forcing and observation.
-    cmd = 'ln -s ../../../data/pals/site_data/forcing_' + S +'.txt '+ wdir + '/forcing.txt'  
+    tup = (s,yrs,source,'Met.txt')
+    met_file_name = '_'.join(tup)
+    print(met_file_name)
+    cmd = 'ln -s ../../../data/plumber-2-met-txt/' + met_file_name + ' '+wdir+ '/forcing.txt'
     os.system(cmd)
-    cmd = 'ln -s ../../../data/pals/site_data/obs_' + S +'_'+ Y + '_train.txt ' + wdir + '/obs.txt'  
+    tup = (s,yrs,source,'Flux.txt')
+    flux_file_name = '_'.join(tup)
+    cmd = 'ln -s ../../../data/plumber-2-flux-txt/' + flux_file_name + ' '+wdir+ '/obs.txt'
     os.system(cmd)
 
-    # site-specific noah-mp input files
-    ignore_these_parms = [3,4,5,23,25,26,27,30,34,45,46,52,53,54]
-    P=[]
-    with open(data_dir+'parms/extract_parms/site_data/parms_' + S + '.txt', 'r') as f:
-        for i, x in enumerate(f):
-            if i not in ignore_these_parms:
-                P.append(x)
-    with open(wdir+'parms.txt', mode='wt', encoding='utf-8') as f:
-          f.writelines("%s" % p for p in P)
-
-    cmd = 'cp '+data_dir+'parms/extract_parms/site_data/cal_parms_' + S + '.txt ' + wdir + '/cal_parms.txt'  
+#    # site-specific noah-mp input files
+#    ignore_these_parms = [3,4,5,23,25,26,27,30,34,45,46,52,53,54]
+#    P=[]
+#    with open(data_dir+'parms/extract_parms/site_data/parms_' + S + '.txt', 'r') as f:
+#        for i, x in enumerate(f):
+#            if i not in ignore_these_parms:
+#                P.append(x)
+#    with open(wdir+'parms.txt', mode='wt', encoding='utf-8') as f:
+#          f.writelines("%s" % p for p in P)
+#    cmd = 'cp '+data_dir+'parms/extract_parms/site_data/cal_parms_' + S + '.txt ' + wdir + '/cal_parms.txt'  
+#    os.system(cmd)
+#    cmd = 'cp '+data_dir+'parms/extract_parms/site_data/time_parms_' + S + '.txt ' + wdir + '/time_parms.txt'
+#    os.system(cmd)
+#    offset = pals_sites[int(sites[s,0])-1,2]
+    
+    # TEMPORARY
+    offset=0
+    cmd = 'cp ../gpr_fluxnet/data/parms/extract_parms/site_data/time_parms_2.txt ' + wdir + '/time_parms.txt'
     os.system(cmd)
-    cmd = 'cp '+data_dir+'parms/extract_parms/site_data/time_parms_' + S + '.txt ' + wdir + '/time_parms.txt'
+    cmd = 'cp ../gpr_fluxnet/data/parms/extract_parms/site_data/cal_parms_2.txt ' + wdir + '/cal_parms.txt'
+    os.system(cmd)
+    cmd = 'cp ../gpr_fluxnet/data/parms/extract_parms/site_data/parms_2.txt ' + wdir + '/parms.txt'
+    os.system(cmd)
+    cmd = 'cp ../gpr_fluxnet/initialize/site_data/soil_init_2.txt ' + wdir + '/soil_init.txt'
     os.system(cmd)
 
     # get site information
-    forcing = np.genfromtxt(wdir + '/forcing.txt')
-    pals_sites = np.genfromtxt('data/pals/Sites.txt')
-    lat = pals_sites[int(sites[s,0])-1,0]
-    lon = pals_sites[int(sites[s,0])-1,1]
-    offset = pals_sites[int(sites[s,0])-1,2]
+    #forcing = np.genfromtxt(wdir + '/forcing.txt',skip_header=1)
+    forcing = pd.read_csv(wdir + '/forcing.txt')
+    forcing = np.array(forcing)
 
     # site-specific noah-mp input files - number of timesteps
     Nt = forcing.shape[0]
@@ -121,6 +135,7 @@ for s in list(plum.site):
         with open(fname, 'w') as F:
             F.write('%f\n%f' % (lat, lon)) 
 
+
     # site-specific noah-mp input files - startdate
     if offset < 0:
         startdate = 200012311200 + (12+offset)*100  # offset here is negative to the west
@@ -132,7 +147,4 @@ for s in list(plum.site):
     with open(fname,'w') as F:
         F.write(startdate)
 
-    # site-specific noah-mp input files - initial states
-    cmd = 'cp ../gpr_fluxnet/initialize/site_data/soil_init_' + S + '.txt ' + wdir + '/soil_init.txt'
-    os.system(cmd)
 # --- End Script ---------------------------------------------------

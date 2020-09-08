@@ -15,7 +15,7 @@ program run_timestep
  !jmframe added sig_sm & Nlag as read in values, not set in code.
  integer :: sig_sm, Nlag, EQs, firstObs 
  integer :: initCycle = 1
- integer :: Ne, Nt
+ integer :: Ne, Nt, Nv
  logical :: perturb, data_assim, doEQ
  
  !file I/O
@@ -26,7 +26,7 @@ program run_timestep
  character(3)       :: es3
 
  !internal indexes
- integer :: s, t, e, ee, l, d, lags
+ integer :: s, t, e, ee, l, d, lags, v
  real    :: dummy
  integer :: vegtyp
  real    :: rz
@@ -44,7 +44,8 @@ program run_timestep
  
  ! obs data
  integer, parameter                  :: Dz = 1
- real, allocatable, dimension(:)   :: obs
+ real, allocatable, dimension(:,:)   :: obs
+ real, allocatable, dimension(:)   :: NEE, GPP, Qle, Qh
  real, dimension(Dz)                 :: zcov
  real, allocatable, dimension(:,:,:) :: X
  real, allocatable, dimension(:,:)   :: Y
@@ -105,23 +106,22 @@ program run_timestep
  if ((data_assim).or.(isOneStep).or.(doEQ).or.(calc_obj_fun)) then
    ! jmframe July 2019, moved this up before the read-in from the observations file.
    ! It is kind of strange that it was below in the first place. Not sure why... 
-   allocate(obs(Nt))
+   allocate(obs(Nt,4))
+   allocate(NEE(Nt))
+   allocate(GPP(Nt))
+   allocate(Qle(Nt))
+   allocate(Qh(Nt))
    obs = -9999.
    ! Take out of the data assimilation logic, because we use it for other things. 
    open(fid,file='obs.txt')
-     do t = 1,Nt
-       ! jmframe: Make sure matches observation file. Added 1 dummy.
-       !Year month Day hour Soil Moisture? Soil Moisture?
-       !2002 1     1   0.0  0.4086666870   0.4216666794
-       read(fid,*) dummy,dummy,dummy,dummy,obs(t),dummy
+     do t = 2,Nt
+       ! jmframe: PLUMBER-2 flux data Ordered from text file make from NetCDF data.
+       ! year,month,day,hour,minute,NEE,GPP,Qle,Qh
+       ! source: /discover/nobackup/jframe/data/plumber-2-flux-txt/
+       read(fid,*) dummy, dummy, dummy, dummy, dummy, NEE(t), GPP(t), Qle(t), Qh(t)
+       read(fid,*) dummy, dummy, dummy, dummy, dummy, obs(t,:)
      enddo ! time
    close(fid)
-   do t = 1,Nt
-     if (obs(t).gt.0) then
-       firstObs = t
-       exit
-     endif
-   enddo
  endif
  ! We only need the covariance for data assimilation, not for one step.
  if((data_assim).or.(perturb)) then
@@ -134,11 +134,15 @@ program run_timestep
  !CRAIG add noise to observation
  if (perturb_one_step) then
   do t=1,Nt
-   obs(t) = obs(t) + sqrt(noise)*random_normal()
+    do v=1,Nv
+      obs(t,v) = obs(t,v) + sqrt(noise)*random_normal()
+    enddo
   enddo
   open(fid,file='obs.txt')
   do t = 1,Nt
-   write(fid,*) obs(t)
+    do v = 1,Nv
+      write(fid,*) obs(t,v)
+    enddo
   enddo
   close(fid)
  endif
@@ -153,7 +157,7 @@ program run_timestep
  ! There was logic to name the ensembles with equal of digits, but I only print 9.
  fname = trim(fdir)//'.txt'
  open(fid,file=trim(fname))
- do t = 1,Nt
+ do t = 2,Nt
    ! the humidity here is kg/kg, not % and not relative humidity.
    read(fid,*) date(t,:),time(t),forcing(t,e)%sfcspd,dummy,   &
                forcing(t,e)%sfctmp,forcing(t,e)%q2,                 &
@@ -308,16 +312,14 @@ program run_timestep
 
      ! timestep
      state(t,e) = state(t-1,e)
-     !JF:
-     ! I finally figured out the trouble with the jumps in the Noah results when running the "onestep" 
-     ! state update simulations. There are two states that need to be updated with the soil moisture observation.
-     ! The SMC (liquid water) and SH2O (Liquid + Ice water). So below I am updating the liquid water directly
-     ! with the observation, and the sH2O state with the observation plus the previous ice content. 
-     if ((isOneStep).and.(obs(t-1)>0)) then
-      ! Soil moisture states 2-4 should change in proportion to SMC1
-      state(t,e)%smc(1) = obs(t-1)
-      state(t,e)%sh2o(1) = obs(t-1) + (state(t-1,e)%sh2o(1) - state(t-1,e)%smc(1))
-     endif
+     
+     ! JMFRAME here we are not going to use the observation for the onestep,
+     ! We are going to use the output from Data Assimilation
+!     if ((isOneStep).and.(obs(t-1)>0)) then
+!      ! Soil moisture states 2-4 should change in proportion to SMC1
+!      state(t,e)%smc(1) = obs(t-1)
+!      state(t,e)%sh2o(1) = obs(t-1) + (state(t-1,e)%sh2o(1) - state(t-1,e)%smc(1))
+!     endif
 
      ! add random perturbation
      !jmframe: why perturb the states of ensemble 1? added logic to prevent.
@@ -388,62 +390,64 @@ program run_timestep
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
    !!!!!!!!! CALL DATA ASSIMILATION !!!!!!!!!!!!!!!!
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   if ((data_assim).and.(obs(t).gt.0)) then
-     lags = min(Nlag,t-1)
+   do v = 1,Nv
+     if ((data_assim).and.(obs(t,v).gt.0)) then
+       lags = min(Nlag,t-1)
  
-     ! soil moisture state updating
-     ! X( lags, Soil Moisture Layers, No. Ensembles)
-     allocate(X(lags,4,Ne))
-     do l = 1,lags
-       do e = 1,Ne
-         X(l,:,e) = state(t-l+1,e)%smc(1:4)
+       ! soil moisture state updating
+       ! X( lags, Soil Moisture Layers, No. Ensembles)
+       allocate(X(lags,4,Ne))
+       do l = 1,lags
+         do e = 1,Ne
+           X(l,:,e) = state(t-l+1,e)%smc(1:4)
+         enddo
        enddo
-     enddo
 
-     ! Y(DZ,Ne) etc... 
-     ! Fix later on. take out the hard coded DZ values
-     !jmframe: might as well fix now. Only dealing with one (SM1)
-     allocate(Y(Dz,Ne))
-     allocate(Z(Dz))
-     allocate(R(Dz))
-     do e = 1,Ne
-       Y(Dz,e) = state(t,e)%smc(1)
-      enddo
-     Z = obs(t)
-     R = zcov(Dz) ! read in as observation covariance from obs_cov.txt 
+       ! Y(DZ,Ne) etc... 
+       ! Fix later on. take out the hard coded DZ values
+       !jmframe: might as well fix now. Only dealing with one (SM1)
+       allocate(Y(Dz,Ne))
+       allocate(Z(Dz))
+       allocate(R(Dz))
+       do e = 1,Ne
+         Y(Dz,e) = state(t,e)%smc(1)
+       enddo
+       Z = obs(t,v)
+       R = zcov(Dz) ! read in as observation covariance from obs_cov.txt 
 
-     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     !!!!!!!!!!!!!!!!!!  Ensemle Kalman Smother !!!!!!!!!!!!!!!!!!!!!
-     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     !!!!!     subroutine enks(X,Y,Zbar,Zsig,Nt,Ne,Dx,Dz)   !!!!!!!!!
-     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     call enks(X,Y,Z,R,lags,Ne,4,Dz) 
-     deallocate(Y)
-     deallocate(Z)
-     deallocate(R)
+       !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+       !!!!!!!!!!!!!!!!!!  Ensemle Kalman Smother !!!!!!!!!!!!!!!!!!!!!
+       !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+       !!!!!     subroutine enks(X,Y,Zbar,Zsig,Nt,Ne,Dx,Dz)   !!!!!!!!!
+       !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+       call enks(X,Y,Z,R,lags,Ne,4,Dz) 
+       deallocate(Y)
+       deallocate(Z)
+       deallocate(R)
 
-     ! This updates the model states based on the X result from enks() 
-     do l = 1,lags
-        do e = 1,Ne
-         !Updating all 4 soil moisture states based on the lag.
-         do d = 1,4
-           state(t-l+1,e)%sh2o(d) = &
-               state(t-l+1,e)%sh2o(d)+X(l,d,e)-state(t-l+1,e)%smc(d)
-             state(t-l+1,e)%smc(d) = X(l,d,e)
-           if (state(t-l+1,e)%smc(d).gt.smcmax)  &
-                               state(t-l+1,e)%smc(d) = smcmax
-           if (state(t-l+1,e)%smc(d).lt.smcdry)    &
-                               state(t-l+1,e)%smc(d) = smcdry
-           if (state(t-l+1,e)%sh2o(d).gt.smcmax) &
-                                 state(t-l+1,e)%sh2o(d) = smcmax
-           if (state(t-l+1,e)%sh2o(d).lt.smcdry)   &
-                               state(t-l+1,e)%sh2o(d) = smcdry
-         enddo ! sm dimension
-       enddo ! ensemble
-     enddo ! lag
-      
-     deallocate(X)
-   endif ! DA + SM obs present 
+       ! This updates the model states based on the X result from enks() 
+       do l = 1,lags
+          do e = 1,Ne
+           !Updating all 4 soil moisture states based on the lag.
+           do d = 1,4
+             state(t-l+1,e)%sh2o(d) = &
+                 state(t-l+1,e)%sh2o(d)+X(l,d,e)-state(t-l+1,e)%smc(d)
+               state(t-l+1,e)%smc(d) = X(l,d,e)
+             if (state(t-l+1,e)%smc(d).gt.smcmax)  &
+                                 state(t-l+1,e)%smc(d) = smcmax
+             if (state(t-l+1,e)%smc(d).lt.smcdry)    &
+                                 state(t-l+1,e)%smc(d) = smcdry
+             if (state(t-l+1,e)%sh2o(d).gt.smcmax) &
+                                   state(t-l+1,e)%sh2o(d) = smcmax
+             if (state(t-l+1,e)%sh2o(d).lt.smcdry)   &
+                                 state(t-l+1,e)%sh2o(d) = smcdry
+           enddo ! sm dimension
+         enddo ! ensemble
+       enddo ! lag
+        
+       deallocate(X)
+     endif ! DA + SM obs present 
+   enddo ! End loop through variables
 
    if (isOneStep == .false.) then
     do e = 1,Ne 
@@ -469,6 +473,7 @@ program run_timestep
       enddo ! soil dimension
     enddo ! ensemble for bounds checking
    endif
+
    ! Eqlibration process (i.e., update time 1 with the value at time end.)
    if (doEQ) then
      if (t.eq.Nt) then
@@ -489,18 +494,21 @@ program run_timestep
          lagged(3)  = state(1,1)%smc(1)
          print*, 'Initialization cycle =', initCycle-1
        endif
-       if ((calc_obj_fun).and.(initCycle.le.EQs)) then
-         call rmse_obj_fun(date,time,state(:,1),output(:,1),Nt)
-       endif
+     if ((calc_obj_fun).and.(initCycle.le.EQs)) then
+       call rmse_obj_fun(date,time,state(:,1),output(:,1),Nt)
      endif
-     if (t.eq.firstObs) then
-       do e = 1,Ne
-         do d = 1,setup%nsoil
-           state(t,e)%smc(d) = obs(t)
-         enddo
-         state(t,e)%sh2o = state(t,e)%smc
-       enddo
-     endif
+   endif
+
+     ! JMFRAME I was trying this for the soil moisture project. 
+     ! Probably don't need it now
+!     if (t.eq.firstObs) then
+!       do e = 1,Ne
+!         do d = 1,setup%nsoil
+!           state(t,e)%smc(d) = obs(t)
+!         enddo
+!         state(t,e)%sh2o = state(t,e)%smc
+!       enddo
+!     endif
    endif
    t = t + 1
  enddo ! time loop
