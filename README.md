@@ -23,12 +23,13 @@
 * Let's be very careful about the number of files generated and saved during runs. My (jmframe) file quota is pretty low.
 
 ## Genetal TODO list
+* CHECK WHY LOCAL PARAMETERS NOT WORKING
+* MAKE SURE OBJECTIVE FUNCTION COMPARING 4 FLUXES AGAINST CORRECT OBSERVATION
 * Keep this README up do date. 
 * Need to extract all the local information for the noah runs, the initial plant/soil states, the general parameters and time offset.
 * Finish the multi-objective data assimilation code. Soni has a first version of this. Will try running once the run directories are working.
 * Copy in Craig's GP code. The MPI version runs in parallel and is for training. The non-MPI version is for making predictions. 
 * Make a run directory, and the ability to fill it with a directory for each site:
-    * as of 9-7-2020 a general 'runs' directory, testing open loop and da. This will be replaced by the two directories described below.
     * For the data assimilation runs
         * Add a link to the raw data for processing. Process data as part of the run. Do not save the input data.
         * After all the data assimilation runs have been complete, save all the states in a pickle file, with the site IDs as keys
