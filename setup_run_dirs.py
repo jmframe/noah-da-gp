@@ -105,15 +105,15 @@ for s in list(plum.index.values):
     
     # TEMPORARY, just getting sonething that will run. NEED TO EXTRACT REAL VALUES!!!
     offset=0
-    cmd = 'cp ../gpr_fluxnet/data/parms/extract_parms/site_data/time_parms_2.txt ' + wdir + '/time_parms.txt'
+    cmd = 'cp setup/parms/plumber-2-parms/time_parms_'+s+'.txt ' + wdir + '/time_parms.txt'
     os.system(cmd)
-    cmd = 'cp ../gpr_fluxnet/data/parms/extract_parms/site_data/cal_parms_2.txt ' + wdir + '/cal_parms.txt'
+    cmd = 'cp setup/parms/plumber-2-parms/cal_parms_'+s+'.txt ' + wdir + '/cal_parms.txt'
     os.system(cmd)
-    cmd = 'cp ../gpr_fluxnet/data/parms/extract_parms/site_data/parms_2.txt ' + wdir + '/parms.txt'
+    cmd = 'cp setup/parms/plumber-2-parms/parms_'+s+'.txt ' + wdir + '/parms.txt'
     os.system(cmd)
-    cmd = 'cp ../gpr_fluxnet/initialize/site_data/soil_init_2.txt ' + wdir + '/soil_init.txt'
+    cmd = 'cp setup/soil_init.txt ' + wdir + '/soil_init.txt'
     os.system(cmd)
-    cmd = 'cp ../gpr_fluxnet/initialize/site_data/plant_init_2.txt ' + wdir + '/plant_init.txt'
+    cmd = 'cp setup/plant_init.txt ' + wdir + '/plant_init.txt'
     os.system(cmd)
 
     # get site information
@@ -148,5 +148,4 @@ for s in list(plum.index.values):
     fname = wdir + '/startdate.txt'
     with open(fname,'w') as F:
         F.write(startdate)
-
 # --- End Script ---------------------------------------------------

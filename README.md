@@ -45,4 +45,5 @@
 ## Completed tasks
 * 08-31-2020 [jmframe]: Initialized github repository
 * 09-05-2020 [Soni]: Finished test version of the multiparameter EnKS function
-* 09-08-2020 [jmframe]: Got directory setup roughly working, first successful test run. 
+* 09-08-2020 [jmframe]: Got directory setup roughly working, first successful test run.
+* 09-09-2020 [jmframe]: Extracting local parameters for each site. 
