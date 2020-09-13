@@ -7,6 +7,12 @@
 *.ck
 *.err
 *.out
+
+# Model outputs
+runs/*/*.noah
+*runs/*/.onestep
+*runs/*/.da
+
 train
 *.log
 *_test.txt
