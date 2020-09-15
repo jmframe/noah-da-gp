@@ -2,7 +2,7 @@
 
 # modules
 module purge
-module load comp/intel/19.1.0.166
+module load comp/intel/20.0.0.166
 module load mpi/impi/20.0.0.166
 
 # module load lib/mkl-18.0.0.128 
