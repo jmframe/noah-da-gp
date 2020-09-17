@@ -8,7 +8,7 @@ program gather_parameters
  real, parameter :: minlon = -179.875
  real, parameter :: maxlat = 89.875
  real, parameter :: maxlon = 179.875
- integer, parameter :: nsites = 20
+ integer, parameter :: nsites = 170
  real, parameter :: dlat = 0.25
  real, parameter :: dlon = 0.25
  integer, parameter :: nltype = 20
@@ -42,7 +42,7 @@ program gather_parameters
 
 ! read scan site lists
  in_domain = .false.
- open(12,name='Sites.txt')
+ open(12,name='Sites_land.txt')
  do i = 1,nsites
    read(12,*) lat(i),lon(i)
    if ((lat(i).gt.minlat).and.(lon(i).gt.minlon).and.(lat(i).lt.maxlat).and.(lon(i).lt.maxlon)) then
@@ -162,6 +162,7 @@ program gather_parameters
      else
       write(6,*) 'Read Land Mask @ Site:',i,lmask
       stop 'not a land point'
+      !print*, 'not a land point'
      endif
 
      ! check that lat/lon is correct

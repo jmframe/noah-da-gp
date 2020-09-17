@@ -15,6 +15,7 @@ proj_dir = '/discover/nobackup/jframe/noah-da-gp/'
 parms_dir = proj_dir + 'setup/parms/'
 plum_parms_dir = parms_dir + 'plumber-2-parms/'
 extract_dir = parms_dir + 'extract_parms/'
+gather_dir = parms_dir + 'gather_parms/'
 
 # Read in list of sites
 plum = pd.read_csv(proj_dir+'setup/plumber-2-sites.csv')
@@ -28,6 +29,8 @@ for s in list(plum.index.values):
     print(stryr, endyr, source, lat, lon)
 
     # Copy the namelist templace and replace with site specific lat/lon/start/end
+    cmd = "cp "+gather_dir+"site_data/parms_"+s+".txt parms.txt"
+    os.system(cmd)
     startdate = str(stryr)+"01010000"
     enddate = str(endyr+1)+"01010000"
     startdate = "199801010900"
