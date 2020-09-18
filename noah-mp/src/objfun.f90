@@ -33,7 +33,7 @@ program run_timestep
  real    :: rz
  logical :: fixed, fexists, fixensemble = .true.
  integer, allocatable, dimension(:,:) :: date
- real, allocatable, dimension(:,:) :: time
+ integer, allocatable, dimension(:,:) :: time
  
  !model data
  type(forcing_data), allocatable, dimension(:,:) :: forcing
@@ -527,15 +527,20 @@ program run_timestep
   fname = ofile
   open(fid,file=trim(fname),status='replace')
   do t = 1,Nt
-    write(fid,'(i7,i5, i5, f7.3,                                          &
-                f17.6,f17.6,f17.6,f17.6,f17.6,f17.6,f17.6,f17.6      & 
-                f17.6,f17.6,f17.6,f17.6,f17.6,f17.6,f17.6,f17.6      & 
+    write(fid,'(i7,i7,i7,i7,i7,                                    & 
+                f17.6,f17.6,f17.6                                    & 
+                f17.6,f17.6                                          & 
+                f17.6,f17.6                                          & 
                 f17.6,f17.6,f17.6,f17.6                              & 
-                f17.6,f17.6,f17.6,f17.6,f17.6,f17.6)')               & 
+                f17.6,f17.6,f17.6,f17.6                              & 
+                f17.6,f17.6                                          & 
+                f17.6,f17.6                                          & 
+                f17.6,f17.6,f17.6)')                                 & 
     date(t,:),time(t,:), &
     forcing(t,1)%sfctmp, forcing(t,1)%sfcspd, forcing(t,1)%sfcprs,   &
-    forcing(t,1)%q2, forcing(t,1)%lwrad, forcing(t,1)%swrad,         &
-    forcing(t,1)%prcprate, state(t,1)%smc(1:4),                      &
+    forcing(t,1)%q2, forcing(t,1)%lwrad,                             &
+    forcing(t,1)%swrad, forcing(t,1)%prcprate,                       & 
+    state(t,1)%smc(1:4),                                             &
     state(t,1)%sh2o(1:4),                                            &
     state(t,1)%rtmass, state(t,1)%wood,                              &
     state(t,1)%lfmass, state(t,1)%stmass,                            &

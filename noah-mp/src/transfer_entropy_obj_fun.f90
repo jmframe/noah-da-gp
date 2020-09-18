@@ -14,7 +14,7 @@ subroutine transfer_entropy_obj_fun(mdate,mtime,forcing,state,output,Nt)!ofval,e
 
  ! dates
  integer, dimension(Nt,2) :: mdate, odate
- real, dimension(Nt) :: mtime, otime
+ integer, dimension(Nt) :: mtime, otime
  real :: dummy
 
  ! model vars

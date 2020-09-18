@@ -129,7 +129,7 @@ for s in list(plum.index.values):
             #################################################
             ######## Might wanst to calibrate to a shorter period of time
             ######## If so, just change this to the number of time steps.
-            F.write(str(Nt))
+            F.write(str(Nt+1))
 
     # site-specific noah-mp input files - lat/lon
     fname = wdir + '/lat_lon.txt'

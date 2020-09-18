@@ -13,7 +13,7 @@ subroutine rmse_obj_fun(mdate,mtime,state,output,Nt)!ofval,errcode)
 
  ! dates
  integer, dimension(Nt,3) :: mdate, odate
- real, dimension(Nt,2) :: mtime, otime
+ integer, dimension(Nt,2) :: mtime, otime
  real :: dummy
 
  ! obs/mod vars
