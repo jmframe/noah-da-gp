@@ -487,6 +487,8 @@ program run_timestep
        if (initCycle.le.EQs) then
          t=1
          initCycle = initCycle + 1
+
+
          do e = 1,Ne
  !          call printstatevalues(t, state, Nt)
  !          call printstatevalues(Nt, state, Nt)
@@ -501,10 +503,35 @@ program run_timestep
          lagged(3)  = state(1,1)%smc(1)
          print*, 'Initialization cycle =', initCycle-1
        endif
-     if ((calc_obj_fun).and.(initCycle.le.EQs)) then
-       call rmse_obj_fun(date,time,state(:,1),output(:,1),Nt)
+
+       ! write the plant and soil states:
+       open(fid,file='plant_init.txt')
+         print*, 'updating plant states'
+         write(fid,*) state(Nt,1)%rtmass
+         print*, state(Nt,1)%rtmass
+         write(fid,*) state(Nt,1)%wood
+         print*, state(Nt,1)%wood
+         write(fid,*) state(Nt,1)%lfmass
+         print*, state(Nt,1)%lfmass
+         write(fid,*) state(Nt,1)%stmass
+         print*, state(Nt,1)%stmass
+       close(fid)
+       open(fid,file='soil_init.txt')
+         print*, 'updating soil state'
+         write(fid,*) state(Nt,1)%smc(1)
+         print*, state(Nt,1)%smc(1)
+         write(fid,*) state(Nt,1)%smc(2)
+         print*, state(Nt,1)%smc(2)
+         write(fid,*) state(Nt,1)%smc(3)
+         print*, state(Nt,1)%smc(3)
+         write(fid,*) state(Nt,1)%smc(4)
+         print*, state(Nt,1)%smc(4)
+       close(fid)
+       
+       if ((calc_obj_fun).and.(initCycle.le.EQs)) then
+         call rmse_obj_fun(date,time,state(:,1),output(:,1),Nt)
+       endif
      endif
-   endif
 
      ! JMFRAME I was trying this for the soil moisture project. 
      ! Probably don't need it now
@@ -516,7 +543,9 @@ program run_timestep
 !         state(t,e)%sh2o = state(t,e)%smc
 !       enddo
 !     endif
-   endif
+
+   endif ! End of Eqlibration process 
+
    t = t + 1
  enddo ! time loop
 

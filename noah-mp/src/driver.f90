@@ -359,7 +359,7 @@ subroutine driver(ktime,setup,forcing,state,output,initCycle)
   state%tsno    = tsno
 
 ! pack output
-!  print*, ktime,nowdate,fgev,fcev,fctr,fsh,soldn,lwdn
+  !print*, ktime,nowdate,fgev,fcev,fctr,fsh,soldn,lwdn
   output%Qe    = fgev+fcev+fctr
   output%Qh    = fsh
   output%NEE   = nee
