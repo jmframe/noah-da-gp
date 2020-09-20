@@ -150,7 +150,8 @@ subroutine driver(ktime,setup,forcing,state,output,initCycle)
   uu       = sfcspd
   vv       = 0
   sfctmp   = forcing%sfctmp
-  sfcprs   = forcing%sfcprs * 1.e2
+  ! jmframe. The surface pressure was multiplied by 1e2 for some reason. I removed that.
+  sfcprs   = forcing%sfcprs !* 1.e2
   soldn    = forcing%swrad
   lwdn     = forcing%lwrad
   prcp     = forcing%prcprate
@@ -359,7 +360,6 @@ subroutine driver(ktime,setup,forcing,state,output,initCycle)
   state%tsno    = tsno
 
 ! pack output
-  !print*, ktime,nowdate,fgev,fcev,fctr,fsh,soldn,lwdn
   output%Qe    = fgev+fcev+fctr
   output%Qh    = fsh
   output%NEE   = nee

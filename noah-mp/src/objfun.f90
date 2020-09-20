@@ -366,7 +366,7 @@ program run_timestep
      !!!!!!!!!!!!!!!! run model at timestep !!!!!!!!!!!!!!!!!
      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      call driver(t,setup,forcing(t,e),state(t,e),output(t,e), initCycle)
-
+     
      ! Save background State
      if (data_assim) then
        background(t,e) = state(t,e)

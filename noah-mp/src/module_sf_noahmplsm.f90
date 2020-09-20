@@ -822,19 +822,6 @@ contains
                      LAI    , SAI    , TROOT  , HTOP  , ELAI    , ESAI   ,IGS)
 
 !input GVF should be consistent with LAI
-!     IF(DVEG == 1) THEN
-!        FVEG = SHDFAC
-!        IF(FVEG <= 0.05) FVEG = 0.05
-!     ELSE IF (DVEG == 2 .or. DVEG == 3) THEN
-!        FVEG = 1.-EXP(-0.52*(LAI+SAI))
-!        IF(FVEG <= 0.05) FVEG = 0.05
-!     ELSE IF (DVEG == 4) THEN
-!        FVEG = SHDMAX
-!        IF(FVEG <= 0.05) FVEG = 0.05
-!     ELSE
-!        WRITE(*,*) "-------- FATAL CALLED IN SFLX -----------"
-!        CALL wrf_error_fatal("Namelist parameter DVEG unknown") 
-!     ENDIF
      IF(DVEG == 1) THEN
         FVEG = SHDFAC
         IF(FVEG <= 0.01) FVEG = 0.01
@@ -936,7 +923,7 @@ contains
 ! urban - jref
     QFX = ETRAN + ECAN + EDIR
     IF ( VEGTYP == ISURBAN ) THEN
-       QSFC = (QFX/RHOAIR*CH) + QAIR
+       QSFC = QFX/(RHOAIR*CH) + QAIR
        Q2B = QSFC
     END IF
 
@@ -1729,7 +1716,7 @@ contains
                     IZ0TLND ,Q2V     ,CHV2, CHLEAF, CHUC)               !inout 
 !jref:end                            
     END IF
-
+    
     TGB = TG
     CMB = CM
     CHB = CH
@@ -1750,7 +1737,6 @@ contains
 !energy balance at vege canopy: SAV          =(IRC+SHC+EVC+TR)     *FVEG  at   FVEG 
 !energy balance at vege ground: SAG*    FVEG =(IRG+SHG+EVG+GHV)    *FVEG  at   FVEG
 !energy balance at bare ground: SAG*(1.-FVEG)=(IRB+SHB+EVB+GHB)*(1.-FVEG) at 1-FVEG
-
     IF (VEG .AND. FVEG > 0) THEN 
         TAUX  = FVEG * TAUXV     + (1.0 - FVEG) * TAUXB
         TAUY  = FVEG * TAUYV     + (1.0 - FVEG) * TAUYB
@@ -1788,7 +1774,7 @@ contains
         TGV   = TGB
         CHV   = CHB
     END IF
-
+    
     FIRE = LWDN + FIRA
 
     IF(FIRE <=0.) THEN
@@ -3242,7 +3228,7 @@ contains
 !jref - NITERC test from 5 to 20  
   INTEGER, PARAMETER :: NITERC = 20   !number of iterations for surface temperature
 !jref - NITERG test from 3-5
-  INTEGER, PARAMETER :: NITERG = 5   !number of iterations for ground temperature
+  INTEGER, PARAMETER :: NITERG = 20   !number of iterations for ground temperature
   INTEGER :: MOZSGN    !number of times MOZ changes sign
   REAL    :: MPE       !prevents overflow error if division by zero
 
@@ -3755,7 +3741,7 @@ contains
   REAL    :: MPE     !prevents overflow error if division by zero
 !jref:start
 !  DATA NITERB /3/
-  DATA NITERB /5/
+  DATA NITERB /20/
   SAVE NITERB
   REAL :: T, TDC     !Kelvin to degree Celsius with limit -50 to +50
   TDC(T)   = MIN( 50., MAX(-50.,(T-TFRZ)) )
@@ -3806,49 +3792,6 @@ contains
           END IF
 
         ENDIF
-
-        IF(OPT_SFC == 3) THEN
-          VEGTYP = ISBARREN
-!          CALL SFCDIF3(ILOC   ,JLOC   ,TGB    ,QSFC   ,PSFC   ,&  !in    
-!                       PBLH   ,Z0M    ,Z0M    ,VEGTYP ,ISURBAN,&  !in    
-!                       IZ0TLND,UR     ,ITER   ,NITERB ,SFCTMP ,&  !in    
-!                       THAIR  ,QAIR   ,QC     ,ZLVL   ,        &  !in            
-!                       SFCPRS ,FV     ,CM     ,CH     ,CH2B   ,&  !inout 
-!                       CQ2B   ,MOZ)                               !out   
-!          ! Undo the multiplication by windspeed that SFCDIF3 
-!          ! applies to exchange coefficients CH and CM:
-!          CH   = CH / UR
-!          CM   = CM / UR
-!          CH2B = CH2B / UR
-!
-!          IF(SNOWH > 0.) THEN    ! jref: does this still count??
-!             CM = MIN(0.01,CM)   ! CM & CH are too large, causing
-!             CH = MIN(0.01,CH)   ! computational instability
-!             CH2B = MIN(0.01,CH2B)
-!             CQ2B = MIN(0.01,CQ2B)
-!          END IF
-!        ENDIF
-!
-!       IF(OPT_SFC == 4) THEN
-!          CALL SFCDIF4(ILOC   ,JLOC   ,UU     ,VV     ,SFCTMP ,&  !in
-!                       SFCPRS ,PSFC   ,PBLH   ,DX     ,Z0M    ,&
-!                       TGB    ,QAIR   ,ZLVL   ,IZ0TLND,QSFC   ,&
-!                       H      ,QFX    ,CM     ,CH     ,CH2B   ,& 
-!                       CQ2B   ,MOZ    ,FV     ,U10B   ,V10B)
-!          ! Undo the multiplication by windspeed that SFCDIF4 
-!          ! applies to exchange coefficients CH and CM:
-!          CH   = CH / UR
-!          CM   = CM / UR
-!          CH2B = CH2B / UR
-!
-!          IF(SNOWH > 0.) THEN    ! jref: does this still count??
-!             CM = MIN(0.01,CM)   ! CM & CH are too large, causing
-!             CH = MIN(0.01,CH)   ! computational instability
-!             CH2B = MIN(0.01,CH2B)
-!             CQ2B = MIN(0.01,CQ2B)
-!          END IF
-
-       ENDIF
 
         RAMB = MAX(1.,1./(CM*UR))
         RAHB = MAX(1.,1./(CH*UR))
@@ -5372,7 +5315,7 @@ contains
       INTEGER :: ITER     !iteration index
       INTEGER :: NITER    !number of iterations
 
-      DATA NITER /3/
+      DATA NITER /20/
       SAVE NITER
 
       REAL :: AB          !used in statement functions

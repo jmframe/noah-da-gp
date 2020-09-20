@@ -23,7 +23,7 @@
 * Let's be very careful about the number of files generated and saved during runs. My (jmframe) file quota is pretty low.
 
 ## Genetal TODO list
-* TROUBLESHOOT THE POOR PERFORMANCE OF QE, QH, NEE. MIGHT BE DUE TO ~~LOCAL PARAMETERS~~... BAD INPUTS... UNIT CONVERSION...
+* TROUBLESHOOT THE POOR PERFORMANCE OF QE, QH, NEE. MIGHT BE DUE TO ~~LOCAL PARAMETERS~~... ~~BAD INPUTS~~... UNIT CONVERSION...
 * Keep this README up do date. 
 * Need to extract all the local information for the noah runs, the initial plant/soil states, the general parameters and time offset.
 * Finish the multi-objective data assimilation code. Soni has a first version of this. Will try running once the run directories are working.
@@ -49,3 +49,4 @@
 * 09-09-2020 [jmframe]: Extracting local parameters for each site. 
 * 09-11-2020 [jmframe]: Setup objective function to calculate for qe, qh & nee
 * 09-17-2020 [jmframe]: I think I got the local parameters from the gather\_data and extract\_data tools working.
+* 09-20-2020 [jmframe]: Found a problem with the surface pressure, the code had a hardwired conversion that needed to be removed.
