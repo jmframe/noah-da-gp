@@ -148,4 +148,7 @@ for s in list(plum.index.values):
     fname = wdir + '/startdate.txt'
     with open(fname,'w') as F:
         F.write(startdate)
+    fname = wdir + '/init_flag.txt'
+    with open(fname,'w') as F:
+        F.write(str(10))
 # --- End Script ---------------------------------------------------

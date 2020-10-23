@@ -236,7 +236,7 @@ program run_timestep
      !math, but I added in this max() logic just in case.
      forcing(t,e)%prcprate = forcing(t,1)%prcprate * P_forcing(t,3)
      if (forcing(t,e)%prcprate.lt.0.0) then
-      forcing(t,e)%prcprate = max(forcing(t,1)%prcprate, 0.0)
+      forcing(t,e)%prcprate = max(forcing(t,e)%prcprate, 0.0)
      endif
   
      ! Perturb the SURFACE TEMPERATURE
@@ -250,8 +250,8 @@ program run_timestep
      forcing(t,e)%lwrad = forcing(t,1)%lwrad + diff * rat
      forcing(t,e)%swrad = forcing(t,1)%swrad + diff * (1-rat)
      if (forcing(t,e)%lwrad.lt.0.0.or.forcing(t,e)%swrad.lt.0.0) then
-      forcing(t,e)%lwrad = max(forcing(t,1)%lwrad, 0.0)
-      forcing(t,e)%swrad = max(forcing(t,1)%swrad, 0.0)
+      forcing(t,e)%lwrad = max(forcing(t,e)%lwrad, 0.0)
+      forcing(t,e)%swrad = max(forcing(t,e)%swrad, 0.0)
      endif
   
     enddo ! end TIME LOOP
@@ -501,35 +501,25 @@ program run_timestep
          lagged(1)  = state(1,1)%smc(1)
          lagged(2)  = state(1,1)%smc(1)
          lagged(3)  = state(1,1)%smc(1)
-         print*, 'Initialization cycle =', initCycle-1
        endif
 
        ! write the plant and soil states:
        open(fid,file='plant_init.txt')
-         print*, 'updating plant states'
          write(fid,*) state(Nt,1)%rtmass
-         print*, state(Nt,1)%rtmass
          write(fid,*) state(Nt,1)%wood
-         print*, state(Nt,1)%wood
          write(fid,*) state(Nt,1)%lfmass
-         print*, state(Nt,1)%lfmass
          write(fid,*) state(Nt,1)%stmass
-         print*, state(Nt,1)%stmass
        close(fid)
        open(fid,file='soil_init.txt')
-         print*, 'updating soil state'
          write(fid,*) state(Nt,1)%smc(1)
-         print*, state(Nt,1)%smc(1)
          write(fid,*) state(Nt,1)%smc(2)
-         print*, state(Nt,1)%smc(2)
          write(fid,*) state(Nt,1)%smc(3)
-         print*, state(Nt,1)%smc(3)
          write(fid,*) state(Nt,1)%smc(4)
-         print*, state(Nt,1)%smc(4)
        close(fid)
        
-       if ((calc_obj_fun).and.(initCycle.le.EQs)) then
+       if ((calc_obj_fun).and.(initCycle.le.(EQs-1))) then
          call rmse_obj_fun(date,time,state(:,1),output(:,1),Nt)
+         print*, "Initiliztion cycle", initCycle
        endif
      endif
 

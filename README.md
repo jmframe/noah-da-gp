@@ -23,9 +23,8 @@
 * Let's be very careful about the number of files generated and saved during runs. My (jmframe) file quota is pretty low.
 
 ## Genetal TODO list
-* TROUBLESHOOT THE POOR PERFORMANCE OF QE, QH, NEE. MIGHT BE DUE TO ~~LOCAL PARAMETERS~~... ~~BAD INPUTS~~... UNIT CONVERSION...
-* Keep this README up do date. 
-* Need to extract all the local information for the noah runs, the initial plant/soil states, the general parameters and time offset.
+* Keep this README up do date.
+* Make sure observation files are complete, some are missing data. 
 * Finish the multi-objective data assimilation code. Soni has a first version of this. Will try running once the run directories are working.
 * Copy in Craig's GP code. The MPI version runs in parallel and is for training. The non-MPI version is for making predictions. 
 * Make a run directory, and the ability to fill it with a directory for each site:

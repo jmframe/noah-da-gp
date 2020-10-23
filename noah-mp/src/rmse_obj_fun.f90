@@ -95,17 +95,19 @@ subroutine rmse_obj_fun(mdate,mtime,state,output,Nt)!ofval,errcode)
  ! ------------------------------------------------------------------
  ! write to output file - Root Mean Sum of Squared Error
  open(fid,file='noahmp_objfun.out')
- write(fid,*) "Root Mean Sum of Squared Error"
- do xi=1,Dx
-   write(fid,*) sqrt(sse(xi)/Gx(xi)),','
-   print*, 'RMSE = ', sqrt(sse(xi)/Gx(xi))
- enddo
- write(fid,*) "Nash-Sutcliffe efficiency"
- do xi = 1,Dx
-   write(fid,*) (sse(xi)/nsmeandiff(xi)),','
-   print*, 'NSE = ', 1-(sse(xi)/nsmeandiff(xi))
- enddo
+   write(fid,*) "Root Mean Sum of Squared Error"
+   write(fid,*) "NEE:", sqrt(sse(1)/Gx(1))
+   write(fid,*) "Qle:", sqrt(sse(2)/Gx(2))
+   write(fid,*) "Qh:", sqrt(sse(2)/Gx(2))
+   write(fid,*) "Nash-Sutcliffe efficiency"
+   write(fid,*) "NEE", 1-(sse(1)/nsmeandiff(1))
+   write(fid,*) "Qle", 1-(sse(2)/nsmeandiff(2))
+   write(fid,*) "Qh", 1-(sse(3)/nsmeandiff(3))
  close(fid)
+ print*, "Nash-Sutcliffe efficiency"
+ print*, "NEE", 1-(sse(1)/nsmeandiff(1))
+ print*, "Qle", 1-(sse(2)/nsmeandiff(2))
+ print*, "Qh", 1-(sse(3)/nsmeandiff(3))
 
  ! ------------------------------------------------------------------
  return

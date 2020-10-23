@@ -8,10 +8,11 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
-plot_variable = sys.argv[1]
+run_site = sys.argv[1]
+plot_variable = sys.argv[2]
 
 #########  Set up some lists for the data   ################
-run_dir = '/discover/nobackup/jframe/noah-da-gp/runs/ZM-Mon/'
+run_dir = '/discover/nobackup/jframe/noah-da-gp/runs/'+run_site+'/'
 obs_dict = {'NEE':5, 'GPP':6, 'Qle':7, 'Qh':8}
 out_dict = {'Qle':24, 'Qh':25, 'NEE':26}
 x = []

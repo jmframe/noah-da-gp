@@ -9299,7 +9299,8 @@ END  SUBROUTINE SHALLOWWATERTABLE
    open(134,file='cal_parms.out',access='append')
     write(134,*) BEXP  !45
     write(134,*) log10(DKSAT) !46
-    write(134,*) SMCDRY!51
+    ! JMFRAME moved SMCDRY down into parms.out again
+    !write(134,*) SMCDRY!51
     write(134,*) SMCMAX-SMCDRY!52
     write(134,*) (SMCREF-SMCDRY)/(SMCMAX-SMCDRY)!53
 write(*,*) SMCDRY,SMCREF,SMCWLT,SMCMAX
@@ -9314,7 +9315,7 @@ write(*,*) SMCDRY,SMCREF,SMCWLT,SMCMAX
     write(134,*) F1    !48
     write(134,*) PSISAT!49
     write(134,*) QUARTZ!50
-!    write(134,*) SMCDRY!51
+    write(134,*) SMCDRY!51 JMFRAME added back in now that we are not calibrating smcdry
 !    write(134,*) SMCMAX!52
 !    write(134,*) SMCREF!53
 !    write(134,*) SMCWLT!54
