@@ -3,16 +3,16 @@ subroutine enks(X,Y,Zbar,Zsig,Nt,Ne,Dx,Dz,Threshold_on_CC)
   implicit none
  
  ! in/out 
-  ! This is actually the number of lagged time steps considered
+  ! This is actually the number of lagged time steps considered:
   integer, intent(in)                      :: Nt 
-  ! Number of ensemble numbers
+  ! Number of ensemble numbers:
   integer, intent(in)                      :: Ne 
-  ! Number of observed variables at current time step
+  ! Number of observed variables at current time step:
   integer, intent(in)                      :: Dz 
   ! Number of modeled states at lagged time steps that need to be 
-  ! adjusted based on the information from the observed variables at current time step
+  ! adjusted based on the information from the observed variables at current time step:
   integer, intent(in)                      :: Dx 
-  ! Vector of observed variables at current time step
+  ! Vector of observed variables at current time step:
   real, dimension(Dz), intent(in)          :: Zbar
   ! Vector of standard deviations corresponding to the observed
   ! variables at current time step. This is read in from obs_cov.txt, 
@@ -20,21 +20,23 @@ subroutine enks(X,Y,Zbar,Zsig,Nt,Ne,Dx,Dz,Threshold_on_CC)
   ! since this Zsig is only a standard deviation related to a variance vector 
   ! (instead of covariance). Its values are used for the diagonal matrix R 
   ! below where covariances are 0 (hence only variance-related terms remain 
-  ! and using the term 'variance' is probably ok).
+  ! and using the term 'variance' is probably ok):
   real, dimension(Dz), intent(in)          :: Zsig 
-  ! Alternately Zsig can be vector of relative standard deviations. 
+  ! Alternately Zsig above can be vector of relative standard deviations. 
   ! Comment out and uncomment the relevant 2 lines further below as per what is actually used. 
-  ! Model states that need to be adjusted
+  ! Model states that need to be adjusted:
   real, dimension(Nt,Dx,Ne), intent(inout) :: X 
   ! Modeled variables (states of fluxes) at this time step that 
-  ! directly correspond to the observed variables
+  ! directly correspond to the observed variables:
   real, dimension(Dz,Ne), intent(in)       :: Y 
+  ! If this is not -9999, then for CC terms less than this value, set corresponding K terms to 0:
+  real, intent(in) :: Threshold_on_CC  
  
  ! constants
   real, dimension(Dz,Dz) :: eyeZ ! Identity matrix 
  
  ! manipulation vectors
-  ! Deviations of X at the considered time lag from respective ensemble averages
+  ! Deviations of X at the considered time lag from respective ensemble averages:
   real, dimension(Dx,Ne) :: Xbar 
   real, dimension(Dx,Ne) :: KK 
   real, dimension(Dz,Ne) :: Ybar ! Deviation of Y from respective ensemble averages
@@ -48,8 +50,6 @@ subroutine enks(X,Y,Zbar,Zsig,Nt,Ne,Dx,Dz,Threshold_on_CC)
  
   real, dimension(Dx,Dx) :: Cxx
   real, dimension(Dx,Dz) :: CC
-  ! If this is not -9999, then for CC terms less than this value, set corresponding K terms to 0
-  real, intent(in) :: Threshold_on_CC  
  
  ! indexes
   integer e, t, d, i
@@ -68,12 +68,12 @@ subroutine enks(X,Y,Zbar,Zsig,Nt,Ne,Dx,Dz,Threshold_on_CC)
     do d = 1,Dz
       eta = random_normal()
 
-      ! For Zsig being relative standard deviations. 
+      ! Following Z(d,e) is for Zsig being relative standard deviations. 
       ! If we want to use Zsig being standard deviations, 
-      ! then use the line immediately below instead
+      ! then use the line immediately further below instead
    !   Z(d,e) = Zbar(d) * (1 + eta*Zsig(d)) 
 
-      ! For Zsig being standard deviations. 
+      ! Following Z(d,e) is for Zsig being standard deviations. 
       ! If we want to use Zsig being relative standard deviations, 
       ! then use the line immediately above instead
       Z(d,e) = Zbar(d) + eta*Zsig(d) 
@@ -122,7 +122,7 @@ subroutine enks(X,Y,Zbar,Zsig,Nt,Ne,Dx,Dz,Threshold_on_CC)
  
   IF (Threshold_on_CC .LT. -9998) THEN  
   
-    ! dimensions of X4 and transpose(Ybar) are (Ne, Dz), and of Qinv are (Dz,Dz)
+    ! dimensions of X4 and transpose(Ybar) are (Ne, Dz), and of Qinv are (Dz,Dz):
     X4 = matmul(transpose(Ybar),Qinv) 
     X5 = matmul(X4,Z)/(Ne-1) ! dimensions of X5 are (Ne, Ne)
 
