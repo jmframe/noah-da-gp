@@ -1,6 +1,7 @@
 #!/discover/nobackup/jframe/anaconda3/bin/python
 # This is a script to preprocess before 
 # Running noah-mp with OL for the PLUMBER-2 data.
+# To be run after setup_run_dirs.py and setup_run_dirs_extra.py
 
 import pandas as pd
 import numpy as np
