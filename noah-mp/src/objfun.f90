@@ -10,8 +10,12 @@ program run_timestep
   ! for output (formerly, these were parameters)
   logical :: write_model_output
   logical :: write_ensemble_output
+  logical :: write_all_ensemble_members
   logical :: calc_obj_fun
   logical :: fixensemble
+
+  ! SY: related to output 
+  integer :: Num_members_to_write
  
   ! SY: for obs data (formerly, this was parameter)
   integer                             :: Dz
@@ -135,7 +139,9 @@ program run_timestep
   allocate(background(Nt,Ne))
   allocate(output(Nt,Ne))
 
-  call sim_init(setup, state(1, 1), data_assim, sig_sm, sig_veg, Nlag, Threshold_on_CC, doEQ, EQs, Dz, write_model_output, write_ensemble_output, calc_obj_fun, fixensemble)
+  call sim_init(setup, state(1, 1), data_assim, sig_sm, sig_veg, Nlag, Threshold_on_CC, &
+                doEQ, EQs, Dz, write_model_output, write_ensemble_output, &
+                write_all_ensemble_members, calc_obj_fun, fixensemble, if_state_perturb)
 
   do e = 2, Ne
 
@@ -249,7 +255,7 @@ program run_timestep
   endif ! if ((data_assim).or.(isOneStep).or.(doEQ).or.(calc_obj_fun)) then
   ! We only need the covariance for data assimilation, not for one step.
  
-  if( (data_assim) .or. (if_state_perturb) ) then
+  if (data_assim) then
     allocate(zcov(Dz))
     fname = 'obs_cov.txt'
     open(fid,file=trim(fname))
@@ -938,14 +944,20 @@ program run_timestep
     !ensemble output files
     if (write_ensemble_output) then
 
-      do e = 1,min(9,Ne)
+      if (write_all_ensemble_members) then
+        Num_members_to_write = Ne
+      else
+        Num_members_to_write = min(9,Ne)
+      endif
+
+      do e = 1,Num_members_to_write
        
         if (if_state_perturb) then
 
           if (data_assim) then
-            fname = 'enks_'
+            fname = 'EnsembleOut/enks_'
           else
-            fname = 'open_'
+            fname = 'EnsembleOut/open_'
           endif
  
           if (e.lt.10) then ! SY: NOTE: only this option is active when we 
@@ -988,7 +1000,7 @@ program run_timestep
 
         if (data_assim) then
 
-          fname = 'back_'
+          fname = 'EnsembleOut/back_'
           if (e.lt.10) then ! SY: NOTE: only this option is active when we have 
                   ! done the enveloping "do e = 1,min(9,Ne)" as is the case now
             write(es1,'(i1)') e
@@ -1025,7 +1037,7 @@ program run_timestep
 
         endif ! if (data_assim) then
 
-      enddo ! do e = 1,min(9,Ne)
+      enddo ! do e = 1,Num_members_to_write
 
     endif ! if (write_ensemble_output) then
 
@@ -1085,7 +1097,7 @@ program run_timestep
 !    deallocate(firstObs) ! SY: REMEMBER to uncomment this if states (smc etc)
                             !  are available as observations
   endif
-  if( (data_assim) .or. (if_state_perturb) ) then
+  if (data_assim) then
     deallocate(zcov)
   endif
 
@@ -1260,7 +1272,8 @@ subroutine redprm(nsoil,tbot,vegtyp)
 end subroutine redprm
 
 subroutine sim_init(setup, state, data_assim, sig_sm, sig_veg, Nlag, Threshold_on_CC, &
-     doEQ, EQs, Dz, write_model_output, write_ensemble_output, calc_obj_fun, fixensemble)
+                    doEQ, EQs, Dz, write_model_output, write_ensemble_output, &
+                    write_all_ensemble_members, calc_obj_fun, fixensemble, if_state_perturb)
 
   use type_decs
  
@@ -1272,7 +1285,7 @@ subroutine sim_init(setup, state, data_assim, sig_sm, sig_veg, Nlag, Threshold_o
   real, intent(out) :: sig_sm, sig_veg
   integer, intent(out) :: Nlag, EQs, Dz
   logical, intent(out) :: doEQ, write_model_output, write_ensemble_output, &
-          calc_obj_fun, fixensemble
+                          write_all_ensemble_members, calc_obj_fun, fixensemble
   real, intent(out) :: Threshold_on_CC
   logical :: fexists
 
@@ -1349,14 +1362,18 @@ subroutine sim_init(setup, state, data_assim, sig_sm, sig_veg, Nlag, Threshold_o
 !  read(fid,*) Dz ! should be 3 for NEE, Qle, Qh
 !  close(fid)
 
-  ! values needed for data assimilation
-  if (data_assim) then
+  ! values needed for state perturbation
+  if (if_state_perturb) then
     open(fid,file='sig_sm.txt')
     read(fid,*) sig_sm
     close(fid)
     open(fid,file='sig_veg.txt')
     read(fid,*) sig_veg
     close(fid)
+  endif ! if (if_state_perturb) then
+
+  ! values needed for data assimilation
+  if (data_assim) then
     open(fid,file='Nlag.txt')
     read(fid,*) Nlag
     close(fid)
@@ -1374,6 +1391,7 @@ subroutine sim_init(setup, state, data_assim, sig_sm, sig_veg, Nlag, Threshold_o
   open(fid, file='output_specifications.txt', action='read')
   read(fid,*) write_model_output
   read(fid,*) write_ensemble_output
+  read(fid,*) write_all_ensemble_members
   read(fid,*) calc_obj_fun
   read(fid,*) fixensemble
   close(fid)
