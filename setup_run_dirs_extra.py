@@ -1,7 +1,7 @@
 #!/discover/nobackup/jframe/anaconda3/bin/python
 # This is a script to link forcing and obs files that
 # didn't get done properly from other user accounts 
-# besides Jonathan's
+# besides Jonathan's, after running setup_run_dirs.py
 
 import pandas as pd
 import os
