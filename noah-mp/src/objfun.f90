@@ -231,7 +231,8 @@ program run_timestep
       ! year,month,day,hour,minute,NEE,GPP,Qle,Qh
       ! source: /discover/nobackup/jframe/data/plumber-2-flux-txt/
       read(fid,*) dummy, dummy, dummy, dummy, dummy, NEE(t), dummy, Qle(t), Qh(t)
-      obs(t,1) = NEE(t)
+      obs(t,1) = NEE(t) ! in umol/m2/s
+      obs(t,1) = (obs(t,1)/1000000.0)*44 ! convert to g/m2/s CO2
 !      obs(t,2) = GPP(t) ! SY: Jonathan says that this isn't used in NoahMP 
       obs(t,2) = Qle(t)
       obs(t,3) = Qh(t)
@@ -281,8 +282,10 @@ program run_timestep
     ! the humidity here is kg/kg, not % and not relative humidity.
     read(fid,*) date(t,:),time(t,:), &
                 forcing(t,e)%sfctmp,forcing(t,e)%swrad,forcing(t,e)%lwrad,dummy, &
-                forcing(t,e)%q2,forcing(t,e)%sfcprs,forcing(t,e)%prcprate,forcing(t,e)%sfcspd, &
+                forcing(t,e)%qair,forcing(t,e)%sfcprs,forcing(t,e)%prcprate,forcing(t,e)%sfcspd, &
                 dummy, dummy, dummy, dummy, dummy
+    forcing(t,e)%q2 = forcing(t,e)%qair/(1.0-forcing(t,e)%qair) ! change from 
+                                           ! specific humidity to mixing ratio     
     ! SY: Begin code portion that checks for any non-negative precip etc to separate this 
            !from the capping-to-0 issue during forcing ensembles creation further below 
     if (forcing(t,e)%prcprate .lt. 0.0) then
@@ -290,12 +293,10 @@ program run_timestep
       stop 'Forcing file contains negative value/s for precip!!!'
     endif
     if (forcing(t,e)%swrad .lt. 0.0) then
-      print*, 'The forcing file swrad value is a negative value of ',forcing(t,e)%swrad,' at time ',t
-      stop 'Forcing file contains negative value/s for swrad!!!'
+      forcing(t,e)%swrad = 0.0
     endif
     if (forcing(t,e)%lwrad .lt. 0.0) then
-      print*, 'The forcing file lwrad value is a negative value of ',forcing(t,e)%lwrad,' at time ',t
-      stop 'Forcing file contains negative value/s for lwrad!!!'
+      forcing(t,e)%lwrad = 0.0
     endif
     ! SY: End code portion that checks for any non-negative precip etc to separate this 
            !from the capping-to-0 issue during forcing ensembles creation further below 
