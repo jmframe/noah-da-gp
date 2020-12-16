@@ -633,12 +633,13 @@ program run_timestep
         IfAssimAtThisTimestep = .false.
         NumValidObsAtThisTimeStep = 0
         do zz = 1,Dz
-          if (obs(t,zz) .gt. 0) then
+          if (obs(t,zz) .gt. (-9999+1)) then ! SY: since -ve obs is valid value, 
+              ! hence now changing from obs > 0 condition to obs > -9999
             if (.not. IfAssimAtThisTimestep) then
               IfAssimAtThisTimestep = .true.
             endif
             NumValidObsAtThisTimeStep = NumValidObsAtThisTimeStep + 1
-          endif !  if (obs(t,zz) .gt. 0) then
+          endif !  if (obs(t,zz) .gt. (-9999+1)) then
         enddo !  do zz = 1,Dz
  
         if (IfAssimAtThisTimestep) then
@@ -649,7 +650,7 @@ program run_timestep
       
           WhichValidObsAtThisTimeStep = 0
           do zz = 1,Dz
-            if (obs(t,zz) .gt. 0) then
+            if (obs(t,zz) .gt. (-9999+1)) then
               WhichValidObsAtThisTimeStep = WhichValidObsAtThisTimeStep + 1    
               do e = 1,Ne
                 if (zz .eq. 1) then
@@ -663,7 +664,7 @@ program run_timestep
               Z(WhichValidObsAtThisTimeStep) = obs(t,zz)
               R(WhichValidObsAtThisTimeStep) = zcov(zz) ! read in as 
                      ! observation covariance from obs_cov.txt 
-            endif !  if (obs(t,zz) .gt. 0) then
+            endif !  if (obs(t,zz) .gt. (-9999+1)) then
           enddo !  do zz = 1,Dz
 
           ! soil moisture state updating
